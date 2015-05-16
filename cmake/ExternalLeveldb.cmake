@@ -21,7 +21,7 @@ EXTERNALPROJECT_ADD(
 #    INSTALL_COMMAND  sh -c "rsync -a ${leveldb_build}/libleveldb.* ${PROJECT_BINARY_DIR}/lib/ && rsync -a ${leveldb_build}/include/ ${PROJECT_BINARY_DIR}/include/"
 )
 
-SET(LEVELDB_INCLUDE_DIR ${leveldb_build})
+SET(LEVELDB_INCLUDE_DIR ${leveldb_build}/include)
 SET(LEVELDB_LIB_DIR ${leveldb_build})
 
 ADD_LIBRARY(leveldb SHARED IMPORTED)

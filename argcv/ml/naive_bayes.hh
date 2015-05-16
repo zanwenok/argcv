@@ -5,6 +5,9 @@
 // In machine learning, the perceptron is an algorithm for supervised
 // classification of an input into one of several possible non-binary outputs.
 
+// Progress:
+// TODO: load & save
+
 #include <cstdio>
 #include <cstdint>  // uint64_t
 
@@ -131,7 +134,7 @@ public:
                 if (dx_key2id[ix].find(cx) != dx_key2id[ix].end()) {
                     int nid = dx_key2id[ix].find(cx)->second;
                     double cw = wxx[ix][nid];
-                    //printf("ix : %zu key: %s  w: %f \n", ix, cx.c_str(), cw);
+                    // printf("ix : %zu key: %s  w: %f \n", ix, cx.c_str(), cw);
                     c_score *= cw;
                 } else {
                     c_score = 0;
@@ -139,7 +142,7 @@ public:
                 }
             }
             // printf("%s - %f \n", .c_str(), wy[it->second]);
-            //printf("label : %s score : %f \n", it->first.c_str(), c_score);
+            // printf("label : %s score : %f \n", it->first.c_str(), c_score);
             if (max_val == -1 || c_score > max_val) {
                 max_val = c_score;
                 max_label = it->first;
@@ -175,5 +178,46 @@ private:
 };
 }
 }  // namespace argcv::ml
+
+// sample
+/*
+bool y(std::vector<double> x) {
+    // printf("%f \n",x[0] * 0.2 + x[1] * 0.8 + x[2] * 0.3);
+    return (x[0] * 0.1 * x[1] * 0.8 - x[2] * 0.3 - x[3] * 0.1 + x[4] * 0.2 + 0.2 > 0.5);
+}
+
+std::pair<std::vector<std::string>, std::string> get_pair(const std::string &x1, const std::string &x2,
+                                                          const std::string &y) {
+    std::vector<std::string> x = {x1, x2};
+    return std::make_pair(x, y);
+}
+
+test() {
+    naive_bayes nb;
+    nb.add(get_pair("1", "S", "-1"));
+    nb.add(get_pair("1", "M", "-1"));
+    nb.add(get_pair("1", "M", "1"));
+    nb.add(get_pair("1", "S", "1"));
+    nb.add(get_pair("1", "S", "-1"));
+
+    nb.add(get_pair("2", "S", "-1"));
+    nb.add(get_pair("2", "M", "-1"));
+    nb.add(get_pair("2", "M", "1"));
+    nb.add(get_pair("2", "L", "1"));
+    nb.add(get_pair("2", "L", "1"));
+
+    nb.add(get_pair("3", "L", "1"));
+    nb.add(get_pair("3", "M", "1"));
+    nb.add(get_pair("3", "M", "1"));
+    nb.add(get_pair("3", "L", "1"));
+    nb.add(get_pair("3", "L", "-1"));
+
+    nb.learn();
+
+    std::vector<std::string> x = {"3", "S"};
+    std::string val = nb.predict(x);
+    printf("final result : %s \n", val.c_str());
+}
+*/
 
 #endif  //  ARGCV_ML_NAIVE_BAYES_HH

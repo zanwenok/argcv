@@ -1,0 +1,19 @@
+SET(ARGCV_WRAPPER_LEVELDB_VERSION 1.0)
+SET(ARGCV_WRAPPER_LEVELDB_SOVERSION 0.1)
+
+AUX_SOURCE_DIRECTORY(. LIBARGCV_WRAPPER_LEVELDB_SRC)
+ADD_LIBRARY(argcv_wrapper_leveldb SHARED ${LIBARGCV_WRAPPER_LEVELDB_SRC})
+SET_TARGET_PROPERTIES(argcv_wrapper_leveldb PROPERTIES VERSION ${ARGCV_WRAPPER_LEVELDB_VERSION} SOVERSION ${ARGCV_WRAPPER_LEVELDB_SOVERSION})
+
+ADD_LIBRARY(argcv_wrapper_leveldb_static STATIC ${LIBARGCV_WRAPPER_LEVELDB_SRC})
+SET_TARGET_PROPERTIES(argcv_wrapper_leveldb_static PROPERTIES OUTPUT_NAME "argcv_wrapper_leveldb")
+
+
+ADD_DEPENDENCIES(argcv_wrapper_leveldb leveldb_proj)
+
+TARGET_LINK_LIBRARIES(argcv_wrapper_leveldb leveldb)
+
+ADD_DEPENDENCIES(argcv_wrapper_leveldb_static leveldb_proj)
+
+TARGET_LINK_LIBRARIES(argcv_wrapper_leveldb_static leveldb_static)
+
