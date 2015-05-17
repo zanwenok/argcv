@@ -12,12 +12,14 @@ namespace argcv {
 namespace wrapper {
 namespace leveldb {
 
+typedef bool (*kv_handler)(const std::string&, const std::string&, void*);
+
 // low level apis
 ::leveldb::DB* ldb_init(const std::string& ddir, ::leveldb::Options* _opt, size_t cache_size = 0,
                         bool create_if_missing = true);
 bool ldb_close(::leveldb::DB* db, ::leveldb::Options* _opt);
 
-bool ldb_start_with(::leveldb::DB* db, const std::string& base, key_val_cb kvs, void* data = nullptr);
+bool ldb_start_with(::leveldb::DB* db, const std::string& base, kv_handler kvs, void* data = nullptr);
 bool ldb_exist(::leveldb::DB* db, const std::string& key);
 bool ldb_put(::leveldb::DB* db, const std::string& key, const std::string& val = "");
 bool ldb_get(::leveldb::DB* db, const std::string& key, std::string* _val);
@@ -62,7 +64,7 @@ ldb_wrapper::~ldb_wrapper() {
     if (!is_closed()) { close(); }
 }
 
-bool ldb_wrapper::start_with(const std::string& base, key_val_cb kvs, void* data) {
+bool ldb_wrapper::start_with(const std::string& base, kv_handler kvs, void* data) {
     return ldb_start_with(_info->db, base, kvs, data);
 }
 bool ldb_wrapper::exist(const std::string& key) { return ldb_exist(_info->db, key); }
@@ -100,7 +102,7 @@ bool ldb_close(::leveldb::DB* db, ::leveldb::Options* _opt) {
     return true;
 }
 
-bool ldb_start_with(::leveldb::DB* db, const std::string& base, key_val_cb kvs, void* data) {
+bool ldb_start_with(::leveldb::DB* db, const std::string& base, kv_handler kvs, void* data) {
     ::leveldb::ReadOptions snap_read_opt;
     snap_read_opt.snapshot = db->GetSnapshot();
     ::leveldb::Iterator* it = db->NewIterator(snap_read_opt);

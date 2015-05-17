@@ -13,8 +13,6 @@ namespace argcv {
 namespace wrapper {
 namespace leveldb {
 
-typedef bool (*key_val_cb)(const std::string&, const std::string&, void*);
-
 struct ldb_info;
 
 class ldb_wrapper {
@@ -34,7 +32,8 @@ public:
 
     virtual ~ldb_wrapper();
 
-    bool start_with(const std::string& base, key_val_cb kvs, void* data = nullptr);
+    bool start_with(const std::string& base,
+                    bool (*kv_handler)(const std::string&, const std::string&, void*), void* data = nullptr);
     bool exist(const std::string& key);
     bool put(const std::string& key, const std::string& val = "");
     bool get(const std::string& key, std::string* _val);
@@ -48,6 +47,30 @@ private:
     size_t cache_size;
     bool create_if_missing;
     ldb_info* _info;
+
+    class ldb_wrapper_agent {
+    public:
+        ldb_wrapper_agent(ldb_wrapper& m_o, const std::string& m_k) : o(m_o), k(m_k) {}
+
+        // get value of key
+        operator std::string() const {
+            std::string v;
+            o.get(k, &v);
+            return v;
+        }
+
+        // exist this value 
+        operator bool() const { return o.exist(k); }
+
+        void operator=(const std::string& v) { o.put(k, v); }
+
+    private:
+        ldb_wrapper& o;
+        const std::string k;
+    };
+
+public:
+    ldb_wrapper_agent operator[](const std::string& k) { return ldb_wrapper_agent(*this, k); }
 };
 }
 }
