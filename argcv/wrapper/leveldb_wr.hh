@@ -13,7 +13,7 @@ namespace argcv {
 namespace wrapper {
 namespace leveldb {
 
-typedef bool (*key_val_cb)(const std::string&, const std::string&);
+typedef bool (*key_val_cb)(const std::string&, const std::string&, void*);
 
 struct ldb_info;
 
@@ -21,12 +21,19 @@ class ldb_wrapper {
 public:
     ldb_wrapper(const std::string& ddir, size_t cache_size = 0, bool create_if_missing = true)
         : ddir(ddir), cache_size(cache_size), create_if_missing(create_if_missing) {
-        init();
+        _info = nullptr;
     }
+
+    bool conn();
+    bool close();
+    bool is_closed() { return _info == nullptr; }
+
+    // WARNING : WILL REMOVE ALL DATA
+    static bool destroy(const std::string& ddir);
 
     virtual ~ldb_wrapper();
 
-    bool start_with(const std::string& base, key_val_cb kvs);
+    bool start_with(const std::string& base, key_val_cb kvs, void* data = nullptr);
     bool exist(const std::string& key);
     bool put(const std::string& key, const std::string& val = "");
     bool get(const std::string& key, std::string* _val);
@@ -39,10 +46,9 @@ private:
     const std::string ddir;
     size_t cache_size;
     bool create_if_missing;
-    ldb_info * _info;
-
-    bool init();
+    ldb_info* _info;
 };
+
 }
 }
 }  // namespace argcv::wrapper::leveldb
