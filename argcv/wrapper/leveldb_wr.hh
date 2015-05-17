@@ -28,7 +28,8 @@ public:
     bool close();
     bool is_closed() { return _info == nullptr; }
 
-    // WARNING : WILL REMOVE ALL DATA
+    // WARNING : WILL ERASE ALL DATA IN THIS DIR
+    // SHALL CLOSE THE DB BEFORE CALL THIS FUNCTION
     static bool destroy(const std::string& ddir);
 
     virtual ~ldb_wrapper();
@@ -48,7 +49,6 @@ private:
     bool create_if_missing;
     ldb_info* _info;
 };
-
 }
 }
 }  // namespace argcv::wrapper::leveldb
