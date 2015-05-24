@@ -91,7 +91,7 @@ public:
 
     std::string hex() {
         char buff[sizeof(_hi) * 4];
-        sprintf(buff, "%llx%llx", (long long unsigned int)_hi, (long long unsigned int)_lo);
+        sprintf(buff, "%016llx%016llx", (long long unsigned int)_hi, (long long unsigned int)_lo);
         return std::string(buff);
     }
 
