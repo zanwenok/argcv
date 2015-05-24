@@ -165,12 +165,12 @@ private:
     int get_or_append(std::map<std::string, int> &key2id, std::vector<double> &w, const std::string &key) {
         std::map<std::string, int>::iterator it = key2id.find(key);
         if (it == key2id.end()) {
-            int off = key2id.size();
+            size_t off = key2id.size();
             while (w.size() <= off) w.push_back(0);
             key2id.insert(std::make_pair(key, off));
             return off;
         } else {
-            int off = it->second;
+            size_t off = it->second;
             while (w.size() <= off) w.push_back(0);
             return off;
         }

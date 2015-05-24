@@ -44,14 +44,14 @@ public:
             bool changed = false;
             for (size_t ix = 0; ix < sz_data; ix++) {
                 double p = 0;
-                for (int j = 0; j < nx; j++) {
+                for (size_t j = 0; j < nx; j++) {
                     p += w[j] * data.x_at(ix, j);
                 }
                 p += w[nx];
                 int yatix = ytoint(data.y_at(ix));
                 if (yatix * p <= 0) {
                     changed = true;
-                    for (int j = 0; j < nx; j++) {
+                    for (size_t j = 0; j < nx; j++) {
                         w[j] += rate * yatix * data.x_at(ix, j);
                     }
                     w[nx] += rate * yatix;
@@ -120,7 +120,7 @@ public:
 
     bool predict(std::vector<double> x) {
         double p = 0;
-        for (int j = 0; j < nx; j++) {
+        for (size_t j = 0; j < nx; j++) {
             p += w[j] * x[j];
             // printf("p : %f w[j]: %f x[j]: %f\n ", p, w[j], x[j]);
         }
