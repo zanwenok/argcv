@@ -25,6 +25,36 @@ namespace string {
 class uuid {
 public:
     uuid(uint16_t node = 0) { assign(node); }
+    uuid(uint64_t _hi, uint64_t _lo) : _hi(_hi), _lo(_lo) {}
+    uuid(const std::string & str) {
+        if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') {
+            for (size_t i = 0; i < 18; i++) {
+                if(str[i] != '-') {
+                    if(str[i] >= 'a' && str[i] <= 'f') {
+                        _hi = _hi << 4 | (str[i] - 'a' + 10);
+                    }else if(str[i] >= 'A' && str[i] <= 'Z') {
+                        _hi = _hi << 4 | (str[i] - 'A' + 10);
+                    }else if(str[i] >= '0' && str[i] <= '9') {
+                        _hi = _hi << 4 | (str[i] - '0');
+                    }
+                }
+            }
+            for (size_t i = 18; i < 36; i++) {
+                if(str[i] != '-') {
+                    if(str[i] >= 'a' && str[i] <= 'f') {
+                        _lo = _lo << 4 | (str[i] - 'a' + 10);
+                    }else if(str[i] >= 'A' && str[i] <= 'Z') {
+                        _lo = _lo << 4 | (str[i] - 'A' + 10);
+                    }else if(str[i] >= '0' && str[i] <= '9') {
+                        _lo = _lo << 4 | (str[i] - '0');
+                    }
+                }
+            }
+        } else {
+            _hi = 0;
+            _lo = 0;
+        }
+    }
 
     bool assign(uint16_t node = 0) {
         uint64_t seed = _uuid_ts();
@@ -101,8 +131,8 @@ public:
     bool operator<(uuid const& rhs) { return _hi < rhs._hi; }
 
 private:
-    uint64_t _lo;
     uint64_t _hi;
+    uint64_t _lo;
 
     static const uint64_t _version = 1;  //  uuid version
 
