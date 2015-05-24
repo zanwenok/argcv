@@ -65,7 +65,30 @@ public:
         return std::string(buff);
     }
 
-    std::string str() { return hex(); }
+    std::string str() {
+        std::string s_val;
+        std::string s_hex = hex();
+        for (int i = 0; i < 8; i++) {
+            s_val += s_hex[i];
+        }
+        s_val += '-';
+        for (int i = 8; i < 12; i++) {
+            s_val += s_hex[i];
+        }
+        s_val += '-';
+        for (int i = 12; i < 16; i++) {
+            s_val += s_hex[i];
+        }
+        s_val += '-';
+        for (int i = 16; i < 20; i++) {
+            s_val += s_hex[i];
+        }
+        s_val += '-';
+        for (int i = 20; i < 32; i++) {
+            s_val += s_hex[i];
+        }
+        return s_val;
+    }
 
     std::pair<uint64_t, uint64_t> pair() { return std::make_pair(_hi, _lo); }
 

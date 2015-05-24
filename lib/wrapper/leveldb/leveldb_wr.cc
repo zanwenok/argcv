@@ -56,12 +56,12 @@ bool ldb_wrapper::close() {
     }
 }
 
-bool ldb_wrapper::destroy(const std::string& ddir){
-    return ldb_destroy(ddir);
-}
+bool ldb_wrapper::destroy(const std::string& ddir) { return ldb_destroy(ddir); }
 
 ldb_wrapper::~ldb_wrapper() {
-    if (!is_closed()) { close(); }
+    if (!is_closed()) {
+        close();
+    }
 }
 
 bool ldb_wrapper::start_with(const std::string& base, kv_handler kvs, void* data) {
@@ -158,10 +158,7 @@ bool ldb_batch_rm(::leveldb::DB* db, const std::set<std::string>& keys) {
     return rst;
 }
 
-bool ldb_destroy(const std::string& ddir){
-    return ::leveldb::DestroyDB(ddir,::leveldb::Options()).ok();
-}
-
+bool ldb_destroy(const std::string& ddir) { return ::leveldb::DestroyDB(ddir, ::leveldb::Options()).ok(); }
 }
 }
 }
