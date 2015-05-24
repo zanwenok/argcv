@@ -481,17 +481,21 @@ typedef co_lacus::conn conn;
 
 /*
 sample 1 , echo :
+
 using namespace argcv::net;
 void echo_server() {
     co_lacus pool(9527, 200000);
+    size_t sz_min_sleep = 100;
+    size_t sz_max_sleep = 300000;
+    size_t sz_sleep = sz_min_sleep;
     if (pool._error_no() != 0) {
         printf("pool establish failed .. %d \n", pool._error_no());
     } else {
         printf("pool established .. %d \n", pool._error_no());
-
         for (;;) {
             int id = pool.poll(0);
             if (id != -1) {
+                sz_sleep = sz_min_sleep;
                 printf("#### id: %d\n", id);
                 co_lacus::conn &c = pool[id];
                 bool st = pool.pull(id, 1);
@@ -511,6 +515,14 @@ void echo_server() {
                     }
                 }
                 c.flush();
+            } else{
+                //printf("sleep ...[%lu] time %lu\n",loop++,sz_sleep);
+                //fflush(NULL);
+                sz_sleep *= 2;
+                if(sz_sleep > sz_max_sleep){
+                    sz_sleep = sz_max_sleep;
+                }
+                usleep(sz_sleep);
             }
         }
     }
