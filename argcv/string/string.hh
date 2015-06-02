@@ -56,6 +56,15 @@ std::string as_str(T v) {
 }
 
 template <typename T>
+std::string as_str(std::vector<T> v) {
+    std::string r;
+    for (size_t ix = 0; ix < v.size(); ix++) {
+        r += std::string((char *)(&(v[ix])), sizeof(T));
+    }
+    return r;
+}
+
+template <typename T>
 T as_type(const std::string s) {
     T v;
     size_t sz = sizeof(T);
@@ -68,22 +77,26 @@ T as_type(const std::string s) {
 }
 
 template <typename T>
-std::string as_str(std::vector<T> v) {
-    std::string r;
-    for (size_t ix = 0; ix < v.size(); ix++) {
-        r += std::string((char *)(&(v[ix])), sizeof(T));
+T as_type(const std::string s , size_t offset) {
+    T v;
+    size_t sz = sizeof(T);
+    if (s.size() < sz + offset) {
+        memset(&v, 0, sz);
+    } else {
+        memcpy(&v, s.data() + offset, sz);
     }
-    return r;
+    return v;
 }
 
+
 template <typename T>
-std::vector<T> as_vec(const std::string s) {
+std::vector<T> as_vec(const std::string s, size_t offset = 0) {
     std::vector<T> v;
     size_t tsz = sizeof(T);
-    size_t sz = s.size() / tsz;
-    for (size_t off = 0; off < sz; off++) {
+    size_t sz = (s.size() - offset ) / tsz;
+    for (size_t ix = 0; ix < sz; ix++) {
         T tv;
-        memcpy(&tv, ((char *)s.data()) + off * tsz, tsz);
+        memcpy(&tv, ((char *)s.data()) + ix * tsz + offset, tsz);
         v.push_back(tv);
     }
     return v;
