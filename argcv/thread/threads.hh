@@ -19,18 +19,18 @@ enum class THREAD_STATUS : unsigned char {
 };
 
 template <typename T>
-class thread_lacus {
+class threads {
 public:
     typedef void (*data_process)(T*);
 
 private:
-    class thread_lacus_node {
+    class threads_node {
     public:
         T* _data;
         THREAD_STATUS status;
         int64_t clue;
         size_t _id;
-        thread_lacus* _env;
+        threads* _env;
     };
 
     void back(int64_t idx) {
@@ -55,7 +55,7 @@ private:
     }
 
     static void* thread_handler(void* _cnode) {
-        thread_lacus_node* _v = (thread_lacus_node*)_cnode;
+        threads_node* _v = (threads_node*)_cnode;
         size_t us_cur_sleep = _v->_env->us_min_sleep;
         for (;;) {
             while (_v->status != THREAD_STATUS::THREAD_DATA_PROCESS) {
@@ -74,10 +74,10 @@ private:
     }
 
 public:
-    thread_lacus(data_process _d_proc, size_t sz = 3, size_t us_min_sleep = 100, size_t us_max_sleep = 300000)
+    threads(data_process _d_proc, size_t sz = 3, size_t us_min_sleep = 100, size_t us_max_sleep = 300000)
         : _d_proc(_d_proc), sz_lacus(sz), us_min_sleep(us_min_sleep), us_max_sleep(us_max_sleep) {
         pthread_mutex_init(&_m, NULL);
-        nodes = new thread_lacus_node[sz];
+        nodes = new threads_node[sz];
         _pt = new pthread_t[sz_lacus];
         for (size_t i = 0; i < sz; i++) {
             nodes[i].status = THREAD_STATUS::THREAD_READY;
@@ -95,7 +95,7 @@ public:
         clue = 0;
         _e_no = 0;
     }
-    ~thread_lacus() {
+    ~threads() {
         for (int i = 0; i < sz_lacus; i++) {
             nodes[i].status = THREAD_STATUS::THREAD_CLOSE;
         }
@@ -141,7 +141,7 @@ private:
     pthread_mutex_t _m;
     size_t sz_in_use;
     int64_t clue;
-    thread_lacus_node* nodes;
+    threads_node* nodes;
     pthread_t* _pt;
     int _e_no;
 };

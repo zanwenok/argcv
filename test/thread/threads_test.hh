@@ -2,7 +2,7 @@
 #define ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
 #include "test/argcv_test.h"
 
-#include "argcv/thread/th_lacus.hh"
+#include "argcv/thread/threads.hh"
 
 using namespace argcv::thread;
 
@@ -12,8 +12,8 @@ void test_case_th_lacus_data_printer(int* v) {
     printf("[ end ] : %d \n", *v);
 }
 
-static int test_case_th_lacus(int argc, char* argv[]) {
-    thread_lacus<int> thlacus(test_case_th_lacus_data_printer,3,100,300000);
+static int test_case_threads(int argc, char* argv[]) {
+    threads<int> thlacus(test_case_th_lacus_data_printer,3,100,300000);
     int vals[10];
     for (int v = 0; v < 10; v++) {
         vals[v] = v;

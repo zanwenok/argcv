@@ -6,7 +6,7 @@
 #include "string/string_test.hh"
 #include "wrapper/leveldb_wr_test.hh"
 #include "ir/index/analyzer/analyzer_test.hh"
-#include "thread/th_lacus_test.hh"
+#include "thread/threads_test.hh"
 #include "argcv/argcv.hh"
 
 static int test_case_info(int argc,char * argv[]) {
@@ -22,7 +22,7 @@ const testcase_t test_list[] = {
     test_case_uuid,
     test_case_analyzer_basic,
     test_case_leveldb_wr,
-    test_case_th_lacus
+    test_case_threads
 };
 
 int main(int argc, char * argv[]) {
