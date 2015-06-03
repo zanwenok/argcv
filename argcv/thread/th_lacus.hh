@@ -15,7 +15,6 @@ enum class THREAD_STATUS : unsigned char {
     THREAD_READY,
     THREAD_DATA_PREPARE,
     THREAD_DATA_PROCESS,
-    //THREAD_COMPLETED,
     THREAD_CLOSE
 };
 
@@ -106,21 +105,21 @@ public:
         delete[] nodes;
         delete[] _pt;
     }
-    
-    //template <typename T>
-    int try_add_task(T * _d) {
+
+    // template <typename T>
+    int try_enqueue(T* _d) {
         int64_t idx = alloc();
-        if(idx != -1){
+        if (idx != -1) {
             nodes[idx]._data = _d;
             nodes[idx].status = THREAD_STATUS::THREAD_DATA_PROCESS;
             return 0;
-        }else{
+        } else {
             return -1;
         }
     }
-    
-    int add_task(T * _d) {
-        while(try_add_task(_d) == -1 ) {
+
+    int enqueue(T* _d) {
+        while (try_enqueue(_d) == -1) {
             usleep(us_max_sleep);
         }
         return 0;

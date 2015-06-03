@@ -17,7 +17,7 @@ static int test_case_th_lacus(int argc, char* argv[]) {
     int vals[10];
     for (int v = 0; v < 10; v++) {
         vals[v] = v;
-        thlacus.add_task(&vals[v]);
+        thlacus.enqueue(&vals[v]);
     }
     thlacus.join();
     return 0;
