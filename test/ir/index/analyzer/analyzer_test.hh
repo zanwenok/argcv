@@ -26,7 +26,7 @@ static int test_case_analyzer_basic(int argc, char* argv[]) {
     std::map<std::string, uint64_t> stats(token_stat(&a));
 
     for (std::map<std::string, uint64_t>::const_iterator it = stats.begin(); it != stats.end(); it++) {
-        printf("key: %s value: %llu\n", it->first.c_str(), it->second);
+        printf("key: %s value: %lu\n", it->first.c_str(), (unsigned long)it->second);
     }
     return 0;
 }

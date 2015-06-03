@@ -28,6 +28,8 @@ public:
     uuid(uint16_t node = 0) { assign(node); }
     uuid(uint64_t _hi, uint64_t _lo) : _hi(_hi), _lo(_lo) {}
     uuid(const std::string& str) {
+        _hi = 0;
+        _lo = 0;
         if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') { // str
             for (size_t i = 0; i < 18; i++) {
                 // if (str[i] != '-') {
@@ -74,9 +76,6 @@ public:
             size_t sz = sizeof(uint64_t);
             memcpy(&_hi, str.data(), sz);
             memcpy(&_lo, str.data() + sz, sz);
-        } else {
-            _hi = 0;
-            _lo = 0;
         }
     }
 
