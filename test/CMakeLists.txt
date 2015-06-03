@@ -19,4 +19,4 @@ ADD_TEST(argcv_string_replace ${EXECUTABLE_OUTPUT_PATH}/argcv_test 2)
 ADD_TEST(argcv_string_uuid ${EXECUTABLE_OUTPUT_PATH}/argcv_test 3)
 ADD_TEST(argcv_ir_index_analyzer_basic ${EXECUTABLE_OUTPUT_PATH}/argcv_test 4)
 ADD_TEST(argcv_wrapper_leveldb_wr ${EXECUTABLE_OUTPUT_PATH}/argcv_test 5)
-
+ADD_TEST(argcv_th_lacus ${EXECUTABLE_OUTPUT_PATH}/argcv_test 6)
