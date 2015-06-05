@@ -14,6 +14,10 @@ inline int random_int() {
     return rand_r(&seed);
 }
 
+inline double random_double() {
+    return (double)random_int() / RAND_MAX;
+}
+
 inline std::string random_str(const int len) {
     static const char alphanum[] = "0123456789"
                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
