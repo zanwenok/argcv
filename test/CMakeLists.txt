@@ -20,3 +20,5 @@ ADD_TEST(argcv_string_uuid ${EXECUTABLE_OUTPUT_PATH}/argcv_test 3)
 ADD_TEST(argcv_ir_index_analyzer_basic ${EXECUTABLE_OUTPUT_PATH}/argcv_test 4)
 ADD_TEST(argcv_wrapper_leveldb_wr ${EXECUTABLE_OUTPUT_PATH}/argcv_test 5)
 ADD_TEST(argcv_threads ${EXECUTABLE_OUTPUT_PATH}/argcv_test 6)
+ADD_TEST(argcv_dir_trav ${EXECUTABLE_OUTPUT_PATH}/argcv_test 7)
+
