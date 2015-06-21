@@ -1,6 +1,6 @@
 // Copyright 2014 Yu Jing <yu@argcv.com>
-#ifndef ARGCV_NET_TCP_LISTEN_LACUS_HH
-#define ARGCV_NET_TCP_LISTEN_LACUS_HH
+#ifndef ARGCV_NET_TCP_LISTEN_HH
+#define ARGCV_NET_TCP_LISTEN_HH
 
 // for network io
 
@@ -48,7 +48,7 @@ enum class SOCK_STATUS : unsigned char {
     SOCK_ALIVE = SOCK_SUSPEND
 };
 
-class tcp_listen_lacus {
+class tcp_listen {
 public:
     class conn {
     public:
@@ -60,7 +60,7 @@ public:
             }
         }
 
-        bool assign(tcp_listen_lacus *m_lacus, int m_idx, int m_fd) {
+        bool assign(tcp_listen *m_lacus, int m_idx, int m_fd) {
             _lacus = m_lacus;
             idx = m_idx;
             fd = m_fd;
@@ -163,7 +163,7 @@ public:
     private:
         // conn(const conn &);  // Prevent copy-construction
         // conn & operator=(const conn &);  // Prevent assignment
-        tcp_listen_lacus *_lacus;
+        tcp_listen *_lacus;
         int idx;
         int fd;
         std::string data;
@@ -185,16 +185,16 @@ public:
         }
     };
 
-    tcp_listen_lacus(int port, size_t max_conn_size = 1024, size_t max_buff_size = 1024 * 1024 * 1024)
+    tcp_listen(int port, size_t max_conn_size = 1024, size_t max_buff_size = 1024 * 1024 * 1024)
         : port(port), max_conn_size(max_conn_size), co(new conn[max_conn_size]), error_no(0) {
-        printf("starting tcp_listen_lacus.. %d %lu\n", port, max_conn_size);
+        printf("starting tcp_listen.. %d %lu\n", port, max_conn_size);
         if (!init()) {
-            fprintf(stderr, "tcp_listen_lacus start failed\n");
+            fprintf(stderr, "tcp_listen start failed\n");
             error_no = -1;  // start failed
         }
     }
 
-    ~tcp_listen_lacus() {
+    ~tcp_listen() {
         delete[] co;
         if (listen_fd >= 0) {
             close(listen_fd);
@@ -202,7 +202,7 @@ public:
         if (ev_fd >= 0) {
             close(ev_fd);
         }
-        printf("tcp_listen_lacus closed \n");
+        printf("tcp_listen closed \n");
     }
 
     const int _port() const { return port; }
@@ -241,7 +241,7 @@ public:
                 socklen_t len = sizeof(struct sockaddr_in);
                 int client_fd = accept(listen_fd, (struct sockaddr *)&remote_addr, &len);
                 if (client_fd >= 0) {
-                    printf("tcp_listen_lacus::poll connect %s:%u (fd=%d)\n", inet_ntoa(remote_addr.sin_addr),
+                    printf("tcp_listen::poll connect %s:%u (fd=%d)\n", inet_ntoa(remote_addr.sin_addr),
                            ntohs(remote_addr.sin_port), client_fd);
                     active(client_fd);
                 }
@@ -319,7 +319,7 @@ private:
 
         // char * b_addr = inet_ntoa(self_addr.sin_addr);
         // uint16_t b_port = ntohs(self_addr.sin_port);
-        // printf("tcp_listen_lacus bind to %s:%u\n",b_addr,b_port);
+        // printf("tcp_listen bind to %s:%u\n",b_addr,b_port);
 
         if (-1 == bind(listen_fd, (struct sockaddr *)&self_addr, sizeof(struct sockaddr))) {
             close(listen_fd);
@@ -416,7 +416,7 @@ private:
         int co_offset = _co_alloc();
         if (-1 == co_offset) {
             fprintf(stderr,
-                    "tcp_listen_lacus::active for FD: %d **FAILED** , because assign "
+                    "tcp_listen::active for FD: %d **FAILED** , because assign "
                     "connection failed \n",
                     fd);
             return;
@@ -428,7 +428,7 @@ private:
         if (-1 == epoll_ctl(ev_fd, EPOLL_CTL_ADD, fd, &ee)) {
             close(fd);
             fprintf(stderr,
-                    "tcp_listen_lacus::active for FD: %d **FAILED** , establish "
+                    "tcp_listen::active for FD: %d **FAILED** , establish "
                     "epoll failed \n",
                     fd);
             return;
@@ -439,14 +439,14 @@ private:
         if (-1 == kevent(ev_fd, &ke, 1, NULL, 0, NULL)) {
             close(fd);
             fprintf(stderr,
-                    "tcp_listen_lacus::active for FD: %d **FAILED** , establish "
+                    "tcp_listen::active for FD: %d **FAILED** , establish "
                     "kevent failed \n",
                     fd);
             return;
         }
 #endif  // __KQUEUE__
         co[co_offset].reset(fd, SOCK_STATUS::SOCK_SUSPEND);
-        fprintf(stderr, "tcp_listen_lacus::active for FD: %d , new connection\n", fd);
+        fprintf(stderr, "tcp_listen::active for FD: %d , new connection\n", fd);
     }
 
     int _report_closed() {
@@ -475,7 +475,7 @@ private:
     }
 };
 
-typedef tcp_listen_lacus::conn conn;
+typedef tcp_listen::conn conn;
 }
 }  // namespace argcv::ml
 
@@ -484,7 +484,7 @@ sample 1 , echo :
 
 using namespace argcv::net;
 void echo_server() {
-    tcp_listen_lacus pool(9527, 200000);
+    tcp_listen pool(9527, 200000);
     size_t sz_min_sleep = 100;
     size_t sz_max_sleep = 300000;
     size_t sz_sleep = sz_min_sleep;
@@ -497,7 +497,7 @@ void echo_server() {
             if (id != -1) {
                 sz_sleep = sz_min_sleep;
                 printf("#### id: %d\n", id);
-                tcp_listen_lacus::conn &c = pool[id];
+                tcp_listen::conn &c = pool[id];
                 bool st = pool.pull(id, 1);
                 if (st) {
                     // printf("data:[%s] %lu \n",c.to_str().c_str(), c.to_str().length());
@@ -531,7 +531,7 @@ void echo_server() {
 sample 2 , file_recv :
 void file_server() {
     // echo_server();
-    tcp_listen_lacus pool(9527, 1);
+    tcp_listen pool(9527, 1);
     printf("send a file to server:\n\t$ cat xxx | nc localhost 9527\n");
     if (pool._error_no() != 0) {
         printf("pool establish failed .. %d \n", pool._error_no());
@@ -563,4 +563,4 @@ void file_server() {
 }
 */
 
-#endif  //  ARGCV_NET_TCP_LISTEN_LACUS_HH
+#endif  //  ARGCV_NET_TCP_LISTEN_HH
