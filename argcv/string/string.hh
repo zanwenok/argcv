@@ -77,7 +77,7 @@ T as_type(const std::string s) {
 }
 
 template <typename T>
-T as_type(const std::string s , size_t offset) {
+T as_type(const std::string s, size_t offset) {
     T v;
     size_t sz = sizeof(T);
     if (s.size() < sz + offset) {
@@ -88,12 +88,11 @@ T as_type(const std::string s , size_t offset) {
     return v;
 }
 
-
 template <typename T>
 std::vector<T> as_vec(const std::string s, size_t offset = 0) {
     std::vector<T> v;
     size_t tsz = sizeof(T);
-    size_t sz = (s.size() - offset ) / tsz;
+    size_t sz = (s.size() - offset) / tsz;
     for (size_t ix = 0; ix < sz; ix++) {
         T tv;
         memcpy(&tv, ((char *)s.data()) + ix * tsz + offset, tsz);
@@ -156,6 +155,37 @@ for (size_t ix = 0; ix < info2.size(); ix++) {
 lw.close();
 */
 
+inline int utf8_char_length(unsigned char ch) {
+    unsigned char t = 0x80;
+    if (!(ch & t))  // ! 1000 0000 B
+        return 1;
+    t = t >> 1;
+    if (!(ch & t))  // ! 0100 0000 B
+        return 0;
+    t = t >> 1;
+    int l = 2;
+    while (ch & t) {
+        t = t >> 1;
+        l++;
+        if (l > 6) return -1;
+    }
+    return l;
+}
+
+inline std::vector<std::string> utf8split(const std::string &s) {
+    std::vector<std::string> elems;
+    size_t clen = 0;
+    for (size_t i = 0; i < s.length(); i++) {
+        if ((clen = utf8_char_length(s[i])) < 1 ) {
+            fprintf(stderr,"error size: %zu %zu\n",clen,i);
+            break;
+        } else {
+            elems.push_back(s.substr(i,clen));
+            i += clen - 1 ;
+        }
+    }
+    return elems;
+}
 }
 }  // argcv::string
 
