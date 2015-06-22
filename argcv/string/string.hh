@@ -176,12 +176,12 @@ inline std::vector<std::string> utf8split(const std::string &s) {
     std::vector<std::string> elems;
     size_t clen = 0;
     for (size_t i = 0; i < s.length(); i++) {
-        if ((clen = utf8_char_length(s[i])) < 1 ) {
-            fprintf(stderr,"error size: %zu %zu\n",clen,i);
+        if ((clen = utf8_char_length(s[i])) < 1) {
+            //fprintf(stderr, "error size: %zu %zu\n", clen, i);
             break;
         } else {
-            elems.push_back(s.substr(i,clen));
-            i += clen - 1 ;
+            elems.push_back(s.substr(i, clen));
+            i += clen - 1;
         }
     }
     return elems;
