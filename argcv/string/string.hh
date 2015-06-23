@@ -167,7 +167,7 @@ inline int utf8_char_length(unsigned char ch) {
     while (ch & t) {
         t = t >> 1;
         l++;
-        if (l > 6) return -1;
+        if (l > 6) return 0;
     }
     return l;
 }
@@ -176,12 +176,12 @@ inline std::vector<std::string> utf8split(const std::string &s) {
     std::vector<std::string> elems;
     size_t clen = 0;
     for (size_t i = 0; i < s.length(); i++) {
-        if ((clen = utf8_char_length(s[i])) < 1) {
-            //fprintf(stderr, "error size: %zu %zu\n", clen, i);
-            break;
-        } else {
+        if ((clen = utf8_char_length(s[i]))) {
             elems.push_back(s.substr(i, clen));
             i += clen - 1;
+        } else {
+            // fprintf(stderr, "error size: %zu %zu\n", clen, i);
+            break;
         }
     }
     return elems;
