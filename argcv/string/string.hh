@@ -100,60 +100,6 @@ std::vector<T> as_vec(const std::string s, size_t offset = 0) {
     }
     return v;
 }
-/*
-const char* ddir = "leveldb.data";
-ldb_wrapper lw(ddir, 0, true);
-lw.conn();
-
-argcv::ir::index::analyzer::basic_tokenlizer tokens("abc def ghi");
-argcv::ir::index::analyzer::basic_analyzer anas(&tokens);
-std::string t;
-std::string pr;
-std::string cu;
-anas.prev(pr);
-while (anas.next(t)) {
-    anas.curr(cu);
-    printf("t:[%s]#%s#%s\n", pr.c_str(), cu.c_str(), t.c_str());
-    anas.prev(pr);
-}
-anas.reset();
-anas.prev(pr);
-printf("restart ... \n");
-while (anas.next(t)) {
-    anas.curr(cu);
-    printf("t:[%s]#%s#%s\n", pr.c_str(), cu.c_str(), t.c_str());
-    anas.prev(pr);
-}
-
-int v = 1024;
-char* xv = (char*)&v;
-std::string v_as_str = as_str<int>(v);
-char* s_xv = (char*)v_as_str.data();
-printf("size : %lu , %lu \n", v_as_str.size(), sizeof(v));
-for (int i = 0; i < sizeof(v); i++) {
-    printf("c: %u - %u  - %u\n", (unsigned)(v_as_str[i]), (unsigned)(xv[i]), (unsigned)(s_xv[i]));
-}
-int v_as_str_as_u = as_type<int>(v_as_str);
-
-printf("%d\n", v_as_str_as_u);
-
-std::vector<int> info;
-info.push_back(1);
-info.push_back(2);
-info.push_back(3);
-info.push_back(4);
-std::string info_as_str = as_str<int>(info);
-
-lw.put(v_as_str, info_as_str);
-
-std::vector<int> info2 = as_vec<int>(lw[v_as_str]);
-
-for (size_t ix = 0; ix < info2.size(); ix++) {
-    printf("## %d \n", info2[ix]);
-}
-
-lw.close();
-*/
 
 inline int utf8_char_length(unsigned char ch) {
     unsigned char t = 0x80;
