@@ -6,7 +6,7 @@ ProcessorCount(PROCESSOR_COUNT_VAL)
 
 EXTERNALPROJECT_ADD(
     crfpp_proj
-    GIT_REPOSITORY git@github.com:yuikns/crfpp.git
+    GIT_REPOSITORY https://github.com/yuikns/crfpp.git
     GIT_TAG master
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     UPDATE_COMMAND ""
@@ -36,7 +36,8 @@ ADD_DEPENDENCIES(crfpp crfpp_proj)
 
 ADD_DEPENDENCIES(crfpp_static crfpp_proj)
 
-
+SET(CRFPP_LIBRARY ${crfpp})
+SET(CRFPP_LIBRARY_STATIC ${crfpp_static})
 
 
 

@@ -7,7 +7,7 @@ ProcessorCount(PROCESSOR_COUNT_VAL)
 
 EXTERNALPROJECT_ADD(
     leveldb_proj
-    GIT_REPOSITORY git@github.com:google/leveldb.git
+    GIT_REPOSITORY https://github.com/yuikns/leveldb.git
     GIT_TAG v1.18
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     UPDATE_COMMAND ""
@@ -37,3 +37,8 @@ MESSAGE(STATUS "ARGCV LEVEL_DB STATIC " ${leveldb_build}/${CMAKE_STATIC_LIBRARY_
 ADD_DEPENDENCIES(leveldb leveldb_proj)
 
 ADD_DEPENDENCIES(leveldb_static leveldb_proj)
+
+SET(LEVELDB_LIBRARY ${leveldb})
+SET(LEVELDB_LIBRARY_STATIC ${leveldb_static})
+
+

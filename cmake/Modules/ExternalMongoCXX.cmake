@@ -8,7 +8,7 @@ IF (APPLE)
 
 EXTERNALPROJECT_ADD(
     mongo_cxx_proj
-    GIT_REPOSITORY git@github.com:mongodb/mongo-cxx-driver.git
+    GIT_REPOSITORY https://github.com/mongodb/mongo-cxx-driver.git
     GIT_TAG 26compat
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     UPDATE_COMMAND ""
@@ -25,7 +25,7 @@ ELSEIF (UNIX)
 
 EXTERNALPROJECT_ADD(
     mongo_cxx_proj
-    GIT_REPOSITORY git@github.com:mongodb/mongo-cxx-driver.git
+    GIT_REPOSITORY https://github.com/mongodb/mongo-cxx-driver.git
     GIT_TAG 26compat
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}
     UPDATE_COMMAND ""
@@ -44,11 +44,11 @@ ENDIF ()
 SET(MONGO_CXX_INCLUDE_DIR ${mongo_cxx_build}/include)
 SET(MONGO_CXX_LIB_DIR ${mongo_cxx_build}/lib)
 
-#ADD_LIBRARY(mongo_cxx SHARED IMPORTED)
-#SET_PROPERTY(TARGET mongo_cxx PROPERTY IMPORTED_LOCATION ${MONGO_CXX_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}mongoclient${CMAKE_SHARED_LIBRARY_SUFFIX})
+ADD_LIBRARY(mongo_cxx SHARED IMPORTED)
+SET_PROPERTY(TARGET mongo_cxx PROPERTY IMPORTED_LOCATION ${MONGO_CXX_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}mongoclient${CMAKE_SHARED_LIBRARY_SUFFIX})
 
-#MESSAGE(STATUS "ARGCV MONGO_CXX SHARD " ${MONGO_CXX_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}mongoclient${CMAKE_SHARED_LIBRARY_SUFFIX})
-#ADD_DEPENDENCIES(mongo_cxx mongo_cxx_proj)
+MESSAGE(STATUS "ARGCV MONGO_CXX SHARD " ${MONGO_CXX_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}mongoclient${CMAKE_SHARED_LIBRARY_SUFFIX})
+ADD_DEPENDENCIES(mongo_cxx mongo_cxx_proj)
 
 
 
@@ -59,6 +59,9 @@ MESSAGE(STATUS "ARGCV MONGO_CXX STATIC " ${MONGO_CXX_LIB_DIR}/${CMAKE_STATIC_LIB
 
 ADD_DEPENDENCIES(mongo_cxx_static mongo_cxx_proj)
 
+
+SET(MONGO_CXX_LIBRARY ${mongo_cxx})
+SET(MONGO_CXX_LIBRARY_STATIC ${mongo_cxx_static})
 
 
 # http://www.cmake.org/cmake/help/v3.0/command/find_library.html
