@@ -35,7 +35,7 @@ typedef struct ldb_info {
     ::leveldb::Options opt;
 } ldb_info;
 
-bool ldb_wrapper::conn() {
+bool ldb_wr::conn() {
     if (!is_closed()) {
         return false;
     } else {
@@ -45,7 +45,7 @@ bool ldb_wrapper::conn() {
     }
 }
 
-bool ldb_wrapper::close() {
+bool ldb_wr::close() {
     if (is_closed()) {
         return false;
     } else {
@@ -56,26 +56,26 @@ bool ldb_wrapper::close() {
     }
 }
 
-bool ldb_wrapper::destroy(const std::string& ddir) { return ldb_destroy(ddir); }
+bool ldb_wr::destroy(const std::string& ddir) { return ldb_destroy(ddir); }
 
-ldb_wrapper::~ldb_wrapper() {
+ldb_wr::~ldb_wr() {
     if (!is_closed()) {
         close();
     }
 }
 
-bool ldb_wrapper::start_with(const std::string& base, kv_handler kvs, void* data) {
+bool ldb_wr::start_with(const std::string& base, kv_handler kvs, void* data) {
     return ldb_start_with(_info->db, base, kvs, data);
 }
-bool ldb_wrapper::exist(const std::string& key) { return ldb_exist(_info->db, key); }
-bool ldb_wrapper::put(const std::string& key, const std::string& val) { return ldb_put(_info->db, key, val); }
-bool ldb_wrapper::get(const std::string& key, std::string* _val) { return ldb_get(_info->db, key, _val); }
-bool ldb_wrapper::rm(const std::string& key) { return ldb_rm(_info->db, key); }
+bool ldb_wr::exist(const std::string& key) { return ldb_exist(_info->db, key); }
+bool ldb_wr::put(const std::string& key, const std::string& val) { return ldb_put(_info->db, key, val); }
+bool ldb_wr::get(const std::string& key, std::string* _val) { return ldb_get(_info->db, key, _val); }
+bool ldb_wr::rm(const std::string& key) { return ldb_rm(_info->db, key); }
 
-bool ldb_wrapper::batch_put(const std::map<std::string, std::string>& kvs) {
+bool ldb_wr::batch_put(const std::map<std::string, std::string>& kvs) {
     return ldb_batch_put(_info->db, kvs);
 }
-bool ldb_wrapper::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_info->db, keys); }
+bool ldb_wr::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_info->db, keys); }
 
 ::leveldb::DB* ldb_init(const std::string& ddir, ::leveldb::Options* _opt, size_t cache_size,
                         bool create_if_missing) {

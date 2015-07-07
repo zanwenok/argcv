@@ -15,9 +15,9 @@ namespace leveldb {
 
 struct ldb_info;
 
-class ldb_wrapper {
+class ldb_wr {
 public:
-    ldb_wrapper(const std::string& ddir, size_t cache_size = 0, bool create_if_missing = true)
+    ldb_wr(const std::string& ddir, size_t cache_size = 0, bool create_if_missing = true)
         : ddir(ddir), cache_size(cache_size), create_if_missing(create_if_missing) {
         _info = nullptr;
     }
@@ -30,7 +30,7 @@ public:
     // SHALL CLOSE THE DB BEFORE CALL THIS FUNCTION
     static bool destroy(const std::string& ddir);
 
-    virtual ~ldb_wrapper();
+    virtual ~ldb_wr();
 
     bool start_with(const std::string& base,
                     bool (*kv_handler)(const std::string&, const std::string&, void*), void* data = nullptr);
@@ -48,9 +48,9 @@ private:
     bool create_if_missing;
     ldb_info* _info;
 
-    class ldb_wrapper_agent {
+    class ldb_wr_agent {
     public:
-        ldb_wrapper_agent(ldb_wrapper& m_o, const std::string& m_k) : o(m_o), k(m_k) {}
+        ldb_wr_agent(ldb_wr& m_o, const std::string& m_k) : o(m_o), k(m_k) {}
 
         // get value of key
         operator std::string() const {
@@ -65,12 +65,12 @@ private:
         void operator=(const std::string& v) { o.put(k, v); }
 
     private:
-        ldb_wrapper& o;
+        ldb_wr& o;
         const std::string k;
     };
 
 public:
-    ldb_wrapper_agent operator[](const std::string& k) { return ldb_wrapper_agent(*this, k); }
+    ldb_wr_agent operator[](const std::string& k) { return ldb_wr_agent(*this, k); }
 };
 
 /*

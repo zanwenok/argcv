@@ -18,13 +18,13 @@ bool test_case_leveldb_wr_key_value_printer(const std::string& k, const std::str
 
 static int test_case_leveldb_wr(int argc, char* argv[]) {
     const char* ddir = "test_case_leveldb_wr.data";
-    ldb_wrapper lw(ddir, 0, true);
+    ldb_wr lw(ddir, 0, true);
     lw.conn();
     lw.put("a", "00");
     lw.put("a01", "01");
     lw.put("a02", "02");
     // lw.put("a03", "03");
-    printf("destroy status : %d \n", ldb_wrapper::destroy(ddir));
+    printf("destroy status : %d \n", ldb_wr::destroy(ddir));
     lw.put("a04", "04");
     lw.put("b01", "04");
     lw.put("b03", "05");
@@ -53,7 +53,7 @@ static int test_case_leveldb_wr(int argc, char* argv[]) {
 
     lw.start_with("a", test_case_leveldb_wr_key_value_printer, &i);
 
-    printf("destroy status : %d \n", ldb_wrapper::destroy(ddir));
+    printf("destroy status : %d \n", ldb_wr::destroy(ddir));
 
     printf("is closed ? %d \n", lw.is_closed() ? 1 : 0);
     lw.close();
