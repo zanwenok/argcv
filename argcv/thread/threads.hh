@@ -1,5 +1,5 @@
-#ifndef ARGCV_THREAD_TH_LACUS_HH
-#define ARGCV_THREAD_TH_LACUS_HH
+#ifndef ARGCV_THREAD_THREADS_HH
+#define ARGCV_THREAD_THREADS_HH
 
 #include <cstdio>
 #include <cstdlib>
@@ -148,4 +148,4 @@ private:
 }
 }  // argcv::thread
 
-#endif  //  ARGCV_THREAD_TH_LACUS_HH
+#endif  //  ARGCV_THREAD_THREADS_HH
