@@ -9,11 +9,6 @@ ADD_LIBRARY(argcv_wrapper_ini_static STATIC ${LIBARGCV_WRAPPER_INI_SRC})
 SET_TARGET_PROPERTIES(argcv_wrapper_ini_static PROPERTIES OUTPUT_NAME "argcv_wrapper_ini")
 
 
-ADD_DEPENDENCIES(argcv_wrapper_ini leveldb_proj)
 
-TARGET_LINK_LIBRARIES(argcv_wrapper_ini leveldb)
 
-ADD_DEPENDENCIES(argcv_wrapper_ini_static leveldb_proj)
-
-TARGET_LINK_LIBRARIES(argcv_wrapper_ini_static leveldb_static)
 

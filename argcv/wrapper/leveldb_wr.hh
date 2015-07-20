@@ -42,6 +42,9 @@ public:
     bool batch_put(const std::map<std::string, std::string>& kvs);
     bool batch_rm(const std::set<std::string>& keys);
 
+    const size_t _cache_size() const { return cache_size; }
+    const bool _create_if_missing() const { return create_if_missing; }
+
 private:
     const std::string ddir;
     size_t cache_size;
@@ -59,7 +62,7 @@ private:
             return v;
         }
 
-        // exist this value 
+        // exist this value
         operator bool() const { return o.exist(k); }
 
         void operator=(const std::string& v) { o.put(k, v); }

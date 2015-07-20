@@ -6,6 +6,7 @@
 #include "string/string_test.hh"
 #include "sys/sys_test.hh"
 #include "wrapper/leveldb_wr_test.hh"
+#include "wrapper/ini_wr_test.hh"
 #include "ir/index/analyzer/analyzer_test.hh"
 #include "thread/threads_test.hh"
 #include "argcv/argcv.hh"
@@ -23,6 +24,7 @@ const testcase_t test_list[] = {
     test_case_uuid,
     test_case_analyzer_basic,
     test_case_leveldb_wr,
+    test_case_ini_wr,
     test_case_threads,
     test_case_dir_trav
 };
