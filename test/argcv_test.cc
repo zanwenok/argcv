@@ -22,6 +22,7 @@ const testcase_t test_list[] = {
     test_case_string_split,
     test_case_string_replace,
     test_case_uuid,
+    test_case_stemmer,
     test_case_analyzer_basic,
     test_case_leveldb_wr,
     test_case_ini_wr,

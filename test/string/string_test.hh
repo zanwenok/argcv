@@ -43,4 +43,15 @@ static int test_case_uuid(int argc, char* argv[]) {
     return 0;
 }
 
+static int test_case_stemmer(int argc, char* argv[]) {
+    std::vector<std::string> elems = stemm_s("Data Mining一些 中\u00A0文的 控,制 is an analytic process designed to explore data (usually large amounts of data - typically business or market related - also known as big data) in search of consistent patterns and/or systematic relationships between variables, and then to validate the findings by applying the detected patterns to new");
+    for(size_t i =  0 ; i < elems.size(); i ++ ) {
+        //printf("%zu (%s):%lu\n",i,elems[i].c_str(),elems[i].length());
+        printf("[%s] ",elems[i].c_str());
+    }
+    printf("\n");
+    return 0;
+}
+
+
 #endif  // ARGCV_TEST_ARGCV_STRING_STRING_TEST_HH
