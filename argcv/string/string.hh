@@ -132,6 +132,21 @@ inline std::vector<std::string> utf8split(const std::string &s) {
     }
     return elems;
 }
+
+/**
+ * stemm a string
+ */
+std::vector<std::string> stemm_s(const std::string &str);
+
+/**
+ * stemm a string, it will remove all Non ASCII words
+ */
+std::vector<std::string> stemm_s_cl(const std::string &str);
+
+/**
+ * stemm a word
+ */
+std::string stemm_w(const std::string &word);
 }
 }  // argcv::string
 
