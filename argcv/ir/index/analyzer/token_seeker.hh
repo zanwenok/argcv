@@ -1,6 +1,8 @@
 #ifndef ARGCV_IR_INDEX_ANALYZER_TOKEN_SEEKER_HH
 #define ARGCV_IR_INDEX_ANALYZER_TOKEN_SEEKER_HH
 
+#include <string>
+
 namespace argcv {
 namespace ir {
 namespace index {

@@ -9,8 +9,7 @@ namespace ir {
 namespace index {
 class index {
 public:
-    index(const std::string& path, size_t cache_size = 0, size_t shard = 5)
-        : path(path), cache_size(cache_size), shard(shard) {}
+    index(const std::string& path, size_t cache_size = 0, size_t shard = 5);
     virtual ~index();
 
 private:
