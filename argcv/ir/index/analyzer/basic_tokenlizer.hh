@@ -13,8 +13,7 @@ namespace index {
 namespace analyzer {
 class basic_tokenlizer : public tokenlizer {
 public:
-    basic_tokenlizer(const std::string& s) : tokenlizer(s) {
-        data = argcv::string::split(s, " ");
+    basic_tokenlizer(const std::string& s) : tokenlizer(s), data(argcv::string::stemm_s(s)){
         offset = 0;
         size = data.size();
     }
