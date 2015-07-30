@@ -71,7 +71,12 @@ public:
                 curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
                 break;
             case CURL_VERSION::HTTP_VERSION_2_0:
+#ifdef CURL_HTTP_VERSION_2_0
                 curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+#else
+                fprintf(stderr,"warning: http/2.0 not supported in current, using http/1.1 instead\n");
+                curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+#endif
                 break;
         }
     }
