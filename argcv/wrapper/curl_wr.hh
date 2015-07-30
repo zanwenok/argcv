@@ -57,6 +57,11 @@ public:
         curl_easy_setopt(handler, CURLOPT_USERAGENT, useragent.c_str());
     }
 
+    void verbose(bool flag = true) {
+        flag ? curl_easy_setopt(handler, CURLOPT_VERBOSE, 1L)
+             : curl_easy_setopt(handler, CURLOPT_VERBOSE, 0L);
+    }
+
     void conn_timeout(long sec) { curl_easy_setopt(handler, CURLOPT_CONNECTTIMEOUT, sec); }
     void conn_timeout_ms(long ms) { curl_easy_setopt(handler, CURLOPT_CONNECTTIMEOUT_MS, ms); }
     void timeout(long sec) { curl_easy_setopt(handler, CURLOPT_TIMEOUT, sec); }
