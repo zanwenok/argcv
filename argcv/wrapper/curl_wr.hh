@@ -23,6 +23,7 @@ public:
     std::string body;
 };
 
+
 class curl_wr {
 public:
     curl_wr(const std::string& url) : url(url), handler(curl_easy_init()) {
@@ -49,42 +50,17 @@ public:
 
     bool _err() { return _e; }
 
-    void referer(const std::string& rurl) { curl_easy_setopt(handler, CURLOPT_REFERER, rurl.c_str()); }
+    void referer(const std::string& rurl);
+    void header(const std::string& hstr);
+    void useragent(const std::string& useragent);
+    void verbose(bool flag = true);
 
-    void header(const std::string& hstr) { headers = curl_slist_append(headers, hstr.c_str()); }
+    void conn_timeout(long sec);
+    void conn_timeout_ms(long ms);
+    void timeout(long sec);
+    void timeout_ms(long ms);
 
-    void useragent(const std::string& useragent) {
-        curl_easy_setopt(handler, CURLOPT_USERAGENT, useragent.c_str());
-    }
-
-    void verbose(bool flag = true) {
-        flag ? curl_easy_setopt(handler, CURLOPT_VERBOSE, 1L)
-             : curl_easy_setopt(handler, CURLOPT_VERBOSE, 0L);
-    }
-
-    void conn_timeout(long sec) { curl_easy_setopt(handler, CURLOPT_CONNECTTIMEOUT, sec); }
-    void conn_timeout_ms(long ms) { curl_easy_setopt(handler, CURLOPT_CONNECTTIMEOUT_MS, ms); }
-    void timeout(long sec) { curl_easy_setopt(handler, CURLOPT_TIMEOUT, sec); }
-    void timeout_ms(long ms) { curl_easy_setopt(handler, CURLOPT_TIMEOUT_MS, ms); }
-
-    void version(CURL_VERSION v = CURL_VERSION::HTTP_VERSION_1_1) {
-        switch (v) {
-            case CURL_VERSION::HTTP_VERSION_1_0:
-                curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_0);
-                break;
-            case CURL_VERSION::HTTP_VERSION_1_1:
-                curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-                break;
-            case CURL_VERSION::HTTP_VERSION_2_0:
-#ifdef CURL_HTTP_VERSION_2_0
-                curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-#else
-                fprintf(stderr,"warning: http/2.0 not supported in current, using http/1.1 instead\n");
-                curl_easy_setopt(handler, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-#endif
-                break;
-        }
-    }
+    void version(CURL_VERSION v = CURL_VERSION::HTTP_VERSION_1_1);
 
     curl_wr_resp& get();
 
