@@ -1,9 +1,18 @@
 language: cpp
 sudo: false
 
+addons:
+    apt:
+        sources:
+            - ubuntu-toolchain-r-test
+        packages:
+            - g++-4.8
+
 compiler:
-  - clang
-  - gcc
+    - gcc
 
 script: 
-  - cmake . && make -j64 && ctest
+  - cmake . && make -j64 
+
+after_script:
+    - ctest
