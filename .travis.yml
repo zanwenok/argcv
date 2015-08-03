@@ -5,4 +5,5 @@ compiler:
   - clang
   - gcc
 
-script: cmake
+script: 
+  - cmake . && make -j64 && ctest
