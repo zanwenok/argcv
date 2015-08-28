@@ -2,16 +2,31 @@
 
 #include <cstdio>
 
+#include <map>
+#include <set>
+#include <string>
+
+#include "argcv/ir/index/analyzer/analyzer.hh"
+#include "argcv/storage/storage.hh"
+#include "argcv/wrapper/leveldb_wr.hh"
+
 namespace argcv {
 namespace ir {
 namespace index {
+using ::argcv::wrapper::leveldb::ldb_wr;
+using ::argcv::storage::storage;
 
-index::index(const std::string& path, size_t cache_size, size_t shard)
-    : path(path), cache_size(cache_size), shard(shard) {
-    printf("index started %s , %zu , %zu\n", path.c_str(), cache_size, shard);
+index::index(storage* _stg) : _stg(_stg) {
+    printf("index started\n");
+    _stg->conn();
 }
 
-index::~index() { printf("index destroied %s , %zu , %zu\n", path.c_str(), cache_size, shard); }
+index::~index() {
+    _stg->close();
+    printf("index destroied\n");
+}
+
+
 }
 }
-}
+}  // namespace argcv::ir::index

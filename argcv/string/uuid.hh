@@ -30,7 +30,7 @@ public:
     uuid(const std::string& str) {
         _hi = 0;
         _lo = 0;
-        if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') { // str
+        if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') {  // str
             for (size_t i = 0; i < 18; i++) {
                 // if (str[i] != '-') {
                 if (str[i] >= 'a' && str[i] <= 'f') {
@@ -53,7 +53,7 @@ public:
                 }
                 //}
             }
-        } else if (str.size() == 32) { // hex
+        } else if (str.size() == 32) {  // hex
             for (size_t i = 0; i < 16; i++) {
                 if (str[i] >= 'a' && str[i] <= 'f') {
                     _hi = _hi << 4 | (str[i] - 'a' + 10);
@@ -162,6 +162,7 @@ private:
     static const uint64_t _version = 1;  //  uuid version
 
     inline uint64_t _uuid_ts() {
+        static uint64_t lts = 0;
         struct timespec ts;
 #ifdef __MACH__
         // OS X does not have clock_gettime, use clock_get_time
@@ -175,7 +176,14 @@ private:
 #else
         clock_gettime(CLOCK_REALTIME, &ts);
 #endif
-        return ts.tv_sec * 10000000 + (ts.tv_nsec / 100) + 0x01b21dd213814000;
+        uint64_t cts = ts.tv_sec * 10000000 + (ts.tv_nsec / 100) + 0x01b21dd213814000;
+        printf("lts : %llu \n" , lts);
+        if (cts <= lts) {
+            cts = ++lts;
+        } else {
+            lts = cts;
+        }
+        return cts;
     }
 };
 }

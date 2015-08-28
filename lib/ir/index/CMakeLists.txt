@@ -9,6 +9,8 @@ ADD_LIBRARY(argcv_ir_index_static STATIC ${LIBARGCV_IR_INDEX_SRC})
 SET_TARGET_PROPERTIES(argcv_ir_index_static PROPERTIES OUTPUT_NAME "argcv_ir_index")
 
 
+TARGET_LINK_LIBRARIES(argcv_ir_index argcv_wrapper_leveldb)
 
+TARGET_LINK_LIBRARIES(argcv_ir_index_static argcv_wrapper_leveldb_static)
 
 

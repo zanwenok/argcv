@@ -30,18 +30,53 @@ bool ldb_batch_rm(::leveldb::DB* db, const std::set<std::string>& keys);
 
 bool ldb_destroy(const std::string& ddir);
 
+/////////////////////////////////////////////////////////////////////////////////////
+
 typedef struct ldb_info {
-    ::leveldb::DB* db;
+    ::leveldb::DB* _db;
     ::leveldb::Options opt;
 } ldb_info;
 
+typedef struct ldb_info_w { ::leveldb::WriteBatch* _h; } ldb_info_w;
+/////////////////////////////////////////////////////////////////////////////////////
+
+ldb_wr::bw_handler::bw_handler(ldb_info* _info) : _info(_info) {
+    if (_info != nullptr && _info->_db != nullptr) {
+        _w = new ldb_info_w;
+        _w->_h = new ::leveldb::WriteBatch;
+    } else {
+        _w = nullptr;
+    }
+}
+
+ldb_wr::bw_handler::~bw_handler() {
+    if (_w != nullptr) {
+        delete _w->_h;
+        delete _w;
+    }
+}
+
+void ldb_wr::bw_handler::put(const std::string& key, const std::string& val) {
+    _w->_h->Put(key, val);
+}
+void ldb_wr::bw_handler::rm(const std::string& key) {
+    _w->_h->Delete(key);
+    // return true;
+}
+bool ldb_wr::bw_handler::commit() {
+    bool rtv = ((_info->_db->Write(::leveldb::WriteOptions(), _w->_h)).ok());
+    _w->_h->Clear();
+    return rtv;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
 bool ldb_wr::conn() {
     if (!is_closed()) {
         return false;
     } else {
         _info = new ldb_info;
-        _info->db = ldb_init(ddir, &(_info->opt), cache_size, create_if_missing);
-        return _info->db != nullptr;
+        _info->_db = ldb_init(ddir, &(_info->opt), cache_size, create_if_missing);
+        return _info->_db != nullptr;
     }
 }
 
@@ -49,7 +84,7 @@ bool ldb_wr::close() {
     if (is_closed()) {
         return false;
     } else {
-        ldb_close(_info->db, &(_info->opt));
+        ldb_close(_info->_db, &(_info->opt));
         delete _info;
         _info = nullptr;
         return true;
@@ -65,18 +100,19 @@ ldb_wr::~ldb_wr() {
 }
 
 bool ldb_wr::start_with(const std::string& base, kv_handler kvs, void* data) {
-    return ldb_start_with(_info->db, base, kvs, data);
+    return ldb_start_with(_info->_db, base, kvs, data);
 }
-bool ldb_wr::exist(const std::string& key) { return ldb_exist(_info->db, key); }
-bool ldb_wr::put(const std::string& key, const std::string& val) { return ldb_put(_info->db, key, val); }
-bool ldb_wr::get(const std::string& key, std::string* _val) { return ldb_get(_info->db, key, _val); }
-bool ldb_wr::rm(const std::string& key) { return ldb_rm(_info->db, key); }
+bool ldb_wr::exist(const std::string& key) { return ldb_exist(_info->_db, key); }
+bool ldb_wr::put(const std::string& key, const std::string& val) { return ldb_put(_info->_db, key, val); }
+bool ldb_wr::get(const std::string& key, std::string* _val) { return ldb_get(_info->_db, key, _val); }
+bool ldb_wr::rm(const std::string& key) { return ldb_rm(_info->_db, key); }
 
 bool ldb_wr::batch_put(const std::map<std::string, std::string>& kvs) {
-    return ldb_batch_put(_info->db, kvs);
+    return ldb_batch_put(_info->_db, kvs);
 }
-bool ldb_wr::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_info->db, keys); }
+bool ldb_wr::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_info->_db, keys); }
 
+/////////////////////////////////////////////////////////////////////////////////////
 ::leveldb::DB* ldb_init(const std::string& ddir, ::leveldb::Options* _opt, size_t cache_size,
                         bool create_if_missing) {
     if (_opt == nullptr) {
@@ -150,7 +186,7 @@ bool ldb_batch_put(::leveldb::DB* db, const std::map<std::string, std::string>& 
 
 bool ldb_batch_rm(::leveldb::DB* db, const std::set<std::string>& keys) {
     ::leveldb::WriteBatch* _wb = new ::leveldb::WriteBatch;
-    for (std::set<std::string, std::string>::const_iterator it = keys.begin(); it != keys.end(); it++) {
+    for (std::set<std::string>::const_iterator it = keys.begin(); it != keys.end(); it++) {
         _wb->Delete(*it);
     }
     bool rst = ((db->Write(::leveldb::WriteOptions(), _wb)).ok());
