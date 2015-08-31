@@ -15,6 +15,7 @@ namespace argcv {
 namespace storage {
 using ::argcv::wrapper::ini::ini_wr;
 using ::argcv::wrapper::leveldb::ldb_wr;
+using ::argcv::wrapper::leveldb::bw_handler;
 
 hd_storage::hd_storage(const std::string& config) : config(config) {
     ini_wr cfg(config);
@@ -42,27 +43,38 @@ bool hd_storage::close() { return _db->close(); }
 bool hd_storage::is_closed() { return _db->is_closed(); }
 
 bool hd_storage::start_with(const std::string& base,
-                            bool (*kv_handler)(const std::string&, const std::string&, void*), void* data,const std::string& selector) {
+                            bool (*kv_handler)(const std::string&, const std::string&, void*), void* data,
+                            const std::string& selector) {
     return _db->start_with(base, kv_handler, data);
 }
 bool hd_storage::exist(const std::string& key, const std::string& selector) { return _db->exist(key); }
-bool hd_storage::put(const std::string& key, const std::string& val,const std::string& selector) { return _db->put(key, val); }
-bool hd_storage::get(const std::string& key, std::string* _val,const std::string& selector) { return _db->get(key, _val); }
-bool hd_storage::rm(const std::string& key,const std::string& selector) { return _db->rm(key); }
+bool hd_storage::put(const std::string& key, const std::string& val, const std::string& selector) {
+    return _db->put(key, val);
+}
+bool hd_storage::get(const std::string& key, std::string* _val, const std::string& selector) {
+    return _db->get(key, _val);
+}
+bool hd_storage::rm(const std::string& key, const std::string& selector) { return _db->rm(key); }
 
-bool hd_storage::batch_put(const std::map<std::string, std::pair<std::string,std::string>>& kvs) {
-    std::map<std::string,std::string> kvs_to_add;
-    for (std::map<std::string, std::pair<std::string,std::string>>::const_iterator it = kvs.begin(); it != kvs.end(); it++) {
+bool hd_storage::batch_put(const std::map<std::string, std::pair<std::string, std::string>>& kvs) {
+    std::map<std::string, std::string> kvs_to_add;
+    for (std::map<std::string, std::pair<std::string, std::string>>::const_iterator it = kvs.begin();
+         it != kvs.end(); it++) {
         kvs_to_add[it->first] = it->second.second;
     }
-    return _db->batch_put(kvs_to_add); 
+    return _db->batch_put(kvs_to_add);
 }
-bool hd_storage::batch_rm(const std::set<std::pair<std::string,std::string>>& keys) { 
+bool hd_storage::batch_rm(const std::set<std::pair<std::string, std::string>>& keys) {
     std::set<std::string> keys_to_rm;
-    for (std::set<std::pair<std::string, std::string>>::const_iterator it = keys.begin(); it != keys.end(); it++) {
+    for (std::set<std::pair<std::string, std::string>>::const_iterator it = keys.begin(); it != keys.end();
+         it++) {
         keys_to_rm.insert(it->first);
     }
-    return _db->batch_rm(keys_to_rm); 
+    return _db->batch_rm(keys_to_rm);
+}
+
+hd_bw_handler * hd_storage::batch_writer() {
+    return new hd_bw_handler(_db);
 }
 
 const size_t hd_storage::_cache_size() const { return _db->_cache_size(); }

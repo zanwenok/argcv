@@ -58,8 +58,8 @@ public:
 
     bool batch_put(const std::map<std::string, std::string>& kvs);
     bool batch_rm(const std::set<std::string>& keys);
-    
-    bw_handler batch_writer(){ return bw_handler(_info);}
+
+    bw_handler * batch_writer() { return new bw_handler(_info); }
 
     const size_t _cache_size() const { return cache_size; }
     const bool _create_if_missing() const { return create_if_missing; }

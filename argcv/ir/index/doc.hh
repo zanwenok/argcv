@@ -15,8 +15,14 @@ using ::argcv::storage::storage;
 
 class doc {
 public:
-    doc(const std::string& id, storage* _stg) : id(id), _stg(_stg) { printf("doc:start\n"); }
-    virtual ~doc() { printf("doc:end\n"); }
+    doc(const std::string& id, storage* _stg) : id(id), _stg(_stg) {
+        //
+        printf("doc:start\n");  //
+    }
+    virtual ~doc() {
+        //
+        printf("doc:end\n");  //
+    }
 
     const std::string& _id() { return id; }
 
