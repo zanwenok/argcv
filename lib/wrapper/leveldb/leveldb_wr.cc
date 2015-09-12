@@ -56,9 +56,7 @@ ldb_wr::bw_handler::~bw_handler() {
     }
 }
 
-void ldb_wr::bw_handler::put(const std::string& key, const std::string& val) {
-    _w->_h->Put(key, val);
-}
+void ldb_wr::bw_handler::put(const std::string& key, const std::string& val) { _w->_h->Put(key, val); }
 void ldb_wr::bw_handler::rm(const std::string& key) {
     _w->_h->Delete(key);
     // return true;
@@ -81,12 +79,24 @@ bool ldb_wr::conn() {
 }
 
 bool ldb_wr::close() {
+    printf("close start ..\n");
+    fflush(NULL);
     if (is_closed()) {
+        printf("also closed ..\n");
+        fflush(NULL);
         return false;
     } else {
+        printf("try do close start1 ..\n");
+        fflush(NULL);
         ldb_close(_info->_db, &(_info->opt));
+        printf("try do close start2 ..\n");
+        fflush(NULL);
         delete _info;
+        printf("try do close start3 ..\n");
+        fflush(NULL);
         _info = nullptr;
+        printf("try do close finished..\n");
+        fflush(NULL);
         return true;
     }
 }
@@ -95,7 +105,7 @@ bool ldb_wr::destroy(const std::string& ddir) { return ldb_destroy(ddir); }
 
 ldb_wr::~ldb_wr() {
     if (!is_closed()) {
-        close();
+        this->close();
     }
 }
 
@@ -128,13 +138,12 @@ bool ldb_wr::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_
 }
 
 bool ldb_close(::leveldb::DB* db, ::leveldb::Options* _opt) {
+    if (db != nullptr) {
+        delete db;
+    }
     if (_opt != nullptr && _opt->block_cache != nullptr) {
         delete _opt->block_cache;
     }
-    if (db == nullptr) {
-        return false;
-    }
-    delete db;
     return true;
 }
 

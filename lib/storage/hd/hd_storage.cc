@@ -36,7 +36,9 @@ hd_storage::hd_storage(const std::string& config) : config(config) {
     assert(err_no == 0);
 }
 
-hd_storage::~hd_storage() { delete _db; }
+hd_storage::~hd_storage() {
+    delete _db;
+}
 
 bool hd_storage::conn() { return _db->conn(); }
 bool hd_storage::close() { return _db->close(); }
@@ -73,9 +75,7 @@ bool hd_storage::batch_rm(const std::set<std::pair<std::string, std::string>>& k
     return _db->batch_rm(keys_to_rm);
 }
 
-hd_bw_handler * hd_storage::batch_writer() {
-    return new hd_bw_handler(_db);
-}
+hd_bw_handler* hd_storage::batch_writer() { return new hd_bw_handler(_db); }
 
 const size_t hd_storage::_cache_size() const { return _db->_cache_size(); }
 const bool hd_storage::_create_if_missing() const { return _db->_create_if_missing(); }

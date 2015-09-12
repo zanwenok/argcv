@@ -100,7 +100,12 @@ public:
         int write(const std::string &data, size_t sz) {
             // return send(fd,data.c_str(),sz,MSG_DONTWAIT);
             for (;;) {
-                int n_bytes = send(fd, data.c_str(), sz, MSG_DONTWAIT);
+                int n_bytes = send(fd, data.c_str(), sz, MSG_DONTWAIT
+#ifdef MSG_NOSIGNAL
+                                                             | MSG_NOSIGNAL
+#endif
+                                   );  //
+                // int n_bytes = ::write(fd, data.c_str(), sz);//
                 if (0 == n_bytes) {
                     deactive();
                 } else if (-1 == n_bytes) {
@@ -230,6 +235,8 @@ public:
             }
         }
 
+        int _1 __attribute__((unused)) = 1;
+
         for (;;) {
             void *_reply = _evq_read_one();
             if (nullptr == _reply) {
@@ -243,6 +250,11 @@ public:
                 if (client_fd >= 0) {
                     printf("tcp_listen::poll connect %s:%u (fd=%d)\n", inet_ntoa(remote_addr.sin_addr),
                            ntohs(remote_addr.sin_port), client_fd);
+#ifdef SO_NOSIGPIPE
+                    // disaple SIGPIPE signalling for this socket on OSX
+                    if (setsockopt(client_fd, SOL_SOCKET, SO_NOSIGPIPE, &_1, sizeof(_1)) == -1)
+                        fprintf(stderr, "[SOCKET] Failed to set SO_NOSIGPIPE: %s", strerror(errno));
+#endif
                     active(client_fd);
                 }
             } else {

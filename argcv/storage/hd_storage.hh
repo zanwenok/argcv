@@ -1,6 +1,7 @@
 #ifndef ARGCV_STORAGE_HD_STORAGE_HH
 #define ARGCV_STORAGE_HD_STORAGE_HH
 
+
 #include <map>
 #include <set>
 #include <string>
@@ -18,7 +19,8 @@ public:
     // TODO in current , i just using one shard.
     class hd_bw_handler {
     public:
-        hd_bw_handler(::argcv::wrapper::leveldb::ldb_wr* _db) : _bwh(_db->batch_writer()) {}
+        hd_bw_handler(::argcv::wrapper::leveldb::ldb_wr* _db) : _bwh(_db->batch_writer()) {
+        }
         virtual ~hd_bw_handler() {
             delete _bwh;
         }
