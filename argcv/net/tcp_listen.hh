@@ -38,6 +38,7 @@ namespace net {
 
 #define LISTENSOCKET (void *)((intptr_t)~0)
 #define LISTENQ 32
+#define SZ_PULL_MAX 102400 // max pull size 10MB
 
 enum class SOCK_STATUS : unsigned char {
     SOCK_INVALID,
@@ -84,14 +85,18 @@ public:
 
         void push(const std::string &d) { data += d; }
 
+        size_t _sz_data() { return data.size(); }
+
         void flush() {
-            data.clear();
             if (closed()) {
                 _lacus->closed_size_dec();
                 status = SOCK_STATUS::SOCK_INVALID;
                 fd = _lacus->update_free_co_clue(idx);
+                data.clear();
             }
         }
+
+        void clear() { data.clear(); }
 
         bool closed() { return SOCK_STATUS::SOCK_CLOSED == status && data.empty(); }
         bool empty() { return data.empty(); }
@@ -124,7 +129,7 @@ public:
             }
         }
 
-        bool pull(int sz = 2048) {
+        int32_t pull(int32_t sz = 2048) {
             switch (status) {
                 // case SOCK_STATUS::SOCK_READ:
                 //    _c->_status(SOCK_STATUS::SOCK_SUSPEND);
@@ -136,33 +141,37 @@ public:
                         fprintf(stderr, "ERRPR STATUS: %hhu\n", status);
                     }
             }
-            for (;;) {
-                char buffer[sz + 1];
-                int n_bytes = recv(fd, &buffer, sz, MSG_DONTWAIT);
-                if (0 < n_bytes) {
-                    //_c->_status(SOCK_STATUS::SOCK_READ);
-                    push(std::string(buffer, n_bytes));
-                    break;
-                }
-                if (0 == n_bytes) {
-                    deactive();
-                    return false;
-                }
-                if (-1 == n_bytes) {
-                    switch (errno) {  // #include <error.h>
-                        case EWOULDBLOCK:
-                            status = SOCK_STATUS::SOCK_SUSPEND;
-                            break;
-                        case EINTR:
-                            continue;
-                        default:
-                            deactive();
-                            break;
+            int32_t psz = sz - _sz_data();  // check pull size we still need
+            if (psz > SZ_PULL_MAX) psz = SZ_PULL_MAX;   // pull size limited into SZ_PULL_MAX
+            if (psz > 0) {
+                for (;;) {
+                    char buffer[psz + 1];
+                    int n_bytes = recv(fd, &buffer, psz, MSG_DONTWAIT);
+                    if (0 < n_bytes) {
+                        //_c->_status(SOCK_STATUS::SOCK_READ);
+                        push(std::string(buffer, n_bytes));
+                        break;
                     }
-                    return false;
+                    if (0 == n_bytes) {
+                        deactive();
+                        return -2;  //
+                    }
+                    if (-1 == n_bytes) {  // some error founded
+                        switch (errno) {  // #include <error.h>
+                            case EWOULDBLOCK:
+                                status = SOCK_STATUS::SOCK_SUSPEND;
+                                break;
+                            case EINTR:
+                                continue;
+                            default:
+                                deactive();
+                                break;
+                        }
+                        return -1;
+                    }
                 }
             }
-            return true;
+            return _sz_data();
         }
 
     private:
@@ -266,11 +275,11 @@ public:
         }
     }
 
-    bool pull(size_t idx, int sz = 2048) {
+    int32_t pull(size_t idx, int sz = 2048) {
         if (idx >= max_conn_size) {
-            return false;
+            return -3;  // error: idx not found
         }
-        return co[idx].pull(sz);  // TODO
+        return co[idx].pull(sz);  //
     }
 
     int write(size_t idx, const std::string &data, size_t sz) {
