@@ -38,7 +38,7 @@ namespace net {
 
 #define LISTENSOCKET (void *)((intptr_t)~0)
 #define LISTENQ 32
-#define SZ_PULL_MAX 102400 // max pull size 10MB
+#define SZ_PULL_MAX 102400  // max pull size 10MB
 
 enum class SOCK_STATUS : unsigned char {
     SOCK_INVALID,
@@ -141,8 +141,8 @@ public:
                         fprintf(stderr, "ERRPR STATUS: %hhu\n", status);
                     }
             }
-            int32_t psz = sz - _sz_data();  // check pull size we still need
-            if (psz > SZ_PULL_MAX) psz = SZ_PULL_MAX;   // pull size limited into SZ_PULL_MAX
+            int32_t psz = sz - _sz_data();             // check pull size we still need
+            if (psz > SZ_PULL_MAX) psz = SZ_PULL_MAX;  // pull size limited into SZ_PULL_MAX
             if (psz > 0) {
                 for (;;) {
                     char buffer[psz + 1];

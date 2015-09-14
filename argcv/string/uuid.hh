@@ -177,7 +177,6 @@ private:
         clock_gettime(CLOCK_REALTIME, &ts);
 #endif
         uint64_t cts = ts.tv_sec * 10000000 + (ts.tv_nsec / 100) + 0x01b21dd213814000;
-        printf("lts : %llu \n" , lts);
         if (cts <= lts) {
             cts = ++lts;
         } else {

@@ -5,6 +5,6 @@
 
 namespace argcv {
 namespace net {}
-}  // namespace argcv::ml
+}  // namespace argcv::net
 
 #endif  //  ARGCV_NET_NET_HH

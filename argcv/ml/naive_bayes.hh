@@ -137,7 +137,7 @@ public:
                     // printf("ix : %zu key: %s  w: %f \n", ix, cx.c_str(), cw);
                     c_score *= cw;
                 } else {
-                    c_score = 0;
+                    c_score = 0; // score not found ? 
                     break;
                 }
             }
