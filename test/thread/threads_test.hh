@@ -13,7 +13,7 @@ void test_case_th_lacus_data_printer(int* v) {
 }
 
 static int test_case_threads(int argc, char* argv[]) {
-    threads<int> thlacus(test_case_th_lacus_data_printer,3,100,300000);
+    threads<int> thlacus(test_case_th_lacus_data_printer, 3, 100, 300000);
     int vals[10];
     for (int v = 0; v < 10; v++) {
         vals[v] = v;

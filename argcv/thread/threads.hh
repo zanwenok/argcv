@@ -119,10 +119,11 @@ public:
     }
 
     int enqueue(T* _d) {
-        while (try_enqueue(_d) == -1) {
+        int rt;
+        while ((rt = try_enqueue(_d)) == -1) {
             usleep(us_max_sleep);
         }
-        return 0;
+        return rt;
     }
 
     int error_no() { return _e_no; }
