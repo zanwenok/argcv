@@ -1,6 +1,6 @@
 // Copyright 2014 Yu Jing <yu@argcv.com>
-#ifndef ARGCV_NET_TCP_LISTEN_HH
-#define ARGCV_NET_TCP_LISTEN_HH
+#ifndef ARGCV_NIO_TCP_LISTEN_HH
+#define ARGCV_NIO_TCP_LISTEN_HH
 
 // for network io
 
@@ -34,7 +34,7 @@
 #include <string>
 
 namespace argcv {
-namespace net {
+namespace nio {
 
 #define LISTENSOCKET (void *)((intptr_t)~0)
 #define LISTENQ 32
@@ -498,7 +498,7 @@ private:
 
 typedef tcp_listen::conn conn;
 }
-}  // namespace argcv::ml
+}  // namespace argcv::nio
 
 /*
 sample 1 , echo :
@@ -584,4 +584,4 @@ void file_server() {
 }
 */
 
-#endif  //  ARGCV_NET_TCP_LISTEN_HH
+#endif  //  ARGCV_NIO_TCP_LISTEN_HH
