@@ -1,3 +1,7 @@
+#include "global/config.h"
+#if !OPTIONS_USE_EXTERNAL_CURL
+#define ARGCV_WRAPPER_CURL_WR_HH
+#endif
 #ifndef ARGCV_WRAPPER_CURL_WR_HH
 #define ARGCV_WRAPPER_CURL_WR_HH
 

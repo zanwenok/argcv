@@ -1,3 +1,6 @@
+#include "global/config.h" // check OPTIONS_USE_EXTERNAL_CURL
+#if OPTIONS_USE_EXTERNAL_CURL
+
 #include "argcv/wrapper/curl_wr.hh"
 
 #include <openssl/ssl.h>
@@ -83,3 +86,5 @@ void curl_wr::version(CURL_VERSION v) {
 }
 }
 }  // namespace argcv::wrapper::curl
+
+#endif // OPTIONS_USE_EXTERNAL_CURL

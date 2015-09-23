@@ -17,9 +17,12 @@
 #include <utility>  // std::pair, std::make_pair
 
 #include "ml.hh"
+#include "argcv/wrapper/leveldb_wr.hh"
 
 namespace argcv {
 namespace ml {
+
+const static std::string NB_DB_SEPARATOR("\0", 1);
 
 class naive_bayes : public ml<std::string, std::string> {
 public:
@@ -101,24 +104,25 @@ public:
     }
 
     bool save(const std::string &path) {
-        FILE *fp = fopen(path.c_str(), "wb");
-        if (fp == NULL) {
-            fprintf(stderr, "[perceptron::save] file %s open failed \n", path.c_str());
+        ::argcv::wrapper::leveldb::ldb_wr db(path);
+        if (!db.conn()) {
+            fprintf(stderr, "model open failed .. \n");
             return false;
         }
 
-        fclose(fp);
-        return false;
+        db.close();
+        return true;
     }
 
     bool load(const std::string &path) {
-        FILE *fp = fopen(path.c_str(), "rb");
-        if (fp == NULL) {
-            fprintf(stderr, "[perceptron::save] file %s open failed \n", path.c_str());
+        ::argcv::wrapper::leveldb::ldb_wr db(path);
+        if (!db.conn()) {
+            fprintf(stderr, "model open failed .. \n");
             return false;
         }
-        fclose(fp);
-        return false;
+
+        db.close();
+        return true;
     }
 
     std::string predict(std::vector<std::string> x) {
@@ -137,7 +141,7 @@ public:
                     // printf("ix : %zu key: %s  w: %f \n", ix, cx.c_str(), cw);
                     c_score *= cw;
                 } else {
-                    c_score = 0; // score not found ? 
+                    c_score = 0;  // score not found ?
                     break;
                 }
             }
@@ -162,6 +166,7 @@ private:
     int find_by_key(const std::map<std::string, int> &key2id, const std::string &key) {
         return key2id.find(key)->second;
     }
+
     int get_or_append(std::map<std::string, int> &key2id, std::vector<double> &w, const std::string &key) {
         std::map<std::string, int>::iterator it = key2id.find(key);
         if (it == key2id.end()) {
@@ -192,7 +197,7 @@ std::pair<std::vector<std::string>, std::string> get_pair(const std::string &x1,
     return std::make_pair(x, y);
 }
 
-test() {
+void test() {
     naive_bayes nb;
     nb.add(get_pair("1", "S", "-1"));
     nb.add(get_pair("1", "M", "-1"));

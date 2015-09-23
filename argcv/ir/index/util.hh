@@ -10,7 +10,7 @@ namespace index {
 const static std::string DB_SEPARATOR("\0", 1);
 
 inline std::string index_db_doc_prefix() {
-    std::string _prefix("D");
+    std::string _prefix("D");  // shall I use 'static std::string' ?
     return _prefix;
 }
 
