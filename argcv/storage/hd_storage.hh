@@ -1,7 +1,6 @@
 #ifndef ARGCV_STORAGE_HD_STORAGE_HH
 #define ARGCV_STORAGE_HD_STORAGE_HH
 
-
 #include <map>
 #include <set>
 #include <string>
@@ -16,17 +15,15 @@ namespace storage {
 
 class hd_storage : public storage {
 public:
-    // TODO in current , i just using one shard.
-    class hd_bw_handler {
+    class hd_bw_handler : public stg_bw_handler {
     public:
-        hd_bw_handler(::argcv::wrapper::leveldb::ldb_wr* _db) : _bwh(_db->batch_writer()) {
-        }
-        virtual ~hd_bw_handler() {
-            delete _bwh;
-        }
+        hd_bw_handler(::argcv::wrapper::leveldb::ldb_wr* _db) : _bwh(_db->batch_writer()) {}
+        ~hd_bw_handler() { delete _bwh; }
 
-        void put(const std::string& key, const std::string& val = "") { _bwh->put(key, val); }
-        void rm(const std::string& key) { _bwh->rm(key); }
+        void put(const std::string& key, const std::string& val = "", const std::string& selector = "") {
+            _bwh->put(key, val);
+        }
+        void rm(const std::string& key, const std::string& selector = "") { _bwh->rm(key); }
         bool commit() { return _bwh->commit(); }
         bool _err() { return _bwh->_err(); }
 
@@ -54,7 +51,7 @@ public:
     bool batch_put(const std::map<std::string, std::pair<std::string, std::string>>& kvs);
     bool batch_rm(const std::set<std::pair<std::string, std::string>>& keys);
 
-    hd_storage::hd_bw_handler * batch_writer();
+    stg_bw_handler* batch_writer();
 
     const size_t _cache_size() const;
     const bool _create_if_missing() const;

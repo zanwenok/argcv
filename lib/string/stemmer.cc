@@ -45,6 +45,8 @@ std::vector<std::string> stemm_s(const std::string &str) {
                 case '_':
                 case '(':
                 case ')':
+                case ',':
+                case ':':
                     cm = 2;
                     break;
                 default:

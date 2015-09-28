@@ -3,6 +3,7 @@
 #include <cstdio>
 
 #include <map>
+#include <mutex>  // std::mutex
 #include <set>
 #include <string>
 
@@ -16,17 +17,17 @@ namespace index {
 using ::argcv::wrapper::leveldb::ldb_wr;
 using ::argcv::storage::storage;
 
-index::index(storage* _stg) : _stg(_stg) {
+index::index(storage* _stg) : _stg(_stg){
     printf("index started\n");
+    _lock_w = new std::mutex;
     _stg->conn();
 }
 
 index::~index() {
     _stg->close();
+    delete _lock_w;
     printf("index destroied\n");
 }
-
-
 }
 }
 }  // namespace argcv::ir::index

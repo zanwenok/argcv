@@ -10,7 +10,10 @@ SET_TARGET_PROPERTIES(argcv_ir_index_static PROPERTIES OUTPUT_NAME "argcv_ir_ind
 
 
 TARGET_LINK_LIBRARIES(argcv_ir_index argcv_wrapper_leveldb)
+TARGET_LINK_LIBRARIES(argcv_ir_index pthread) # for mutex
+TARGET_LINK_LIBRARIES(argcv_ir_index m) # for math
 
 TARGET_LINK_LIBRARIES(argcv_ir_index_static argcv_wrapper_leveldb_static)
-
+TARGET_LINK_LIBRARIES(argcv_ir_index_static pthread) # for mutex
+TARGET_LINK_LIBRARIES(argcv_ir_index m) # for math
 

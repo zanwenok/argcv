@@ -75,7 +75,7 @@ bool hd_storage::batch_rm(const std::set<std::pair<std::string, std::string>>& k
     return _db->batch_rm(keys_to_rm);
 }
 
-hd_bw_handler* hd_storage::batch_writer() { return new hd_bw_handler(_db); }
+stg_bw_handler* hd_storage::batch_writer() { return new hd_bw_handler(_db); }
 
 const size_t hd_storage::_cache_size() const { return _db->_cache_size(); }
 const bool hd_storage::_create_if_missing() const { return _db->_create_if_missing(); }

@@ -12,6 +12,9 @@ namespace argcv {
 namespace ir {
 namespace index {
 namespace analyzer {
+/**
+ * deprecated... 
+ */
 
 inline std::map<std::string, std::pair<uint64_t, std::vector<uint32_t>>> token_stat(analyzer* _t) {
     std::map<std::string, std::pair<uint64_t, std::vector<uint32_t>>> s;

@@ -30,9 +30,9 @@ public:
     uuid(const std::string& str) {
         _hi = 0;
         _lo = 0;
-        if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') {  // str
+        if (str.size() == 36 && str[8] == '-' && str[13] == '-' && str[18] == '-' && str[23] == '-') {
+            // string
             for (size_t i = 0; i < 18; i++) {
-                // if (str[i] != '-') {
                 if (str[i] >= 'a' && str[i] <= 'f') {
                     _hi = _hi << 4 | (str[i] - 'a' + 10);
                 } else if (str[i] >= 'A' && str[i] <= 'Z') {
@@ -40,10 +40,8 @@ public:
                 } else if (str[i] >= '0' && str[i] <= '9') {
                     _hi = _hi << 4 | (str[i] - '0');
                 }
-                //}
             }
             for (size_t i = 18; i < 36; i++) {
-                // if (str[i] != '-') {
                 if (str[i] >= 'a' && str[i] <= 'f') {
                     _lo = _lo << 4 | (str[i] - 'a' + 10);
                 } else if (str[i] >= 'A' && str[i] <= 'Z') {
@@ -51,9 +49,9 @@ public:
                 } else if (str[i] >= '0' && str[i] <= '9') {
                     _lo = _lo << 4 | (str[i] - '0');
                 }
-                //}
             }
-        } else if (str.size() == 32) {  // hex
+        } else if (str.size() == 32) {
+            // hex
             for (size_t i = 0; i < 16; i++) {
                 if (str[i] >= 'a' && str[i] <= 'f') {
                     _hi = _hi << 4 | (str[i] - 'a' + 10);
@@ -73,6 +71,7 @@ public:
                 }
             }
         } else if (str.size() == sizeof(uint64_t) * 2) {
+            // binary
             size_t sz = sizeof(uint64_t);
             memcpy(&_hi, str.data(), sz);
             memcpy(&_lo, str.data() + sz, sz);
@@ -113,9 +112,10 @@ public:
     ~uuid() {}
 
     std::string hex() {
-        char buff[sizeof(_hi) * 4];
+        const size_t sz_buff = sizeof(_hi) * 4;  //
+        char buff[sz_buff];                      //
         sprintf(buff, "%016llx%016llx", (long long unsigned int)_hi, (long long unsigned int)_lo);
-        return std::string(buff);
+        return std::string(buff, sz_buff);
     }
 
     std::string data() { return as_str<uint64_t>(_hi) += as_str<uint64_t>(_lo); }

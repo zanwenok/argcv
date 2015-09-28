@@ -1,85 +1,130 @@
 #ifndef ARGCV_IR_INDEX_FIELD_HH
 #define ARGCV_IR_INDEX_FIELD_HH
 
+#include <map>
+#include <set>
 #include <string>
+#include <utility>  // std::pair
+#include <vector>
 
+#include "analyzer/analyzer.hh"
 #include "argcv/string/string.hh"
+#include "util.hh"
 
 namespace argcv {
 namespace ir {
 namespace index {
 
-using argcv::string::as_str;
-
-enum class FIELD_TYPE : unsigned char {
-    UNKNOWN = 0x00,
-    TEXT = 0x01,
-    STRING = 0x02,
-    LONG = 0x03,
-    DOUBLE = 0x04,
-    VECTOR = 0x05
-};
-
-enum class DATA_STORE : unsigned char { NO = 0x00, YES = 0x08 };
+using ::argcv::string::as_str;
 
 template <typename T>
 class field {
 public:
-    field(FIELD_TYPE t, T d, DATA_STORE s = DATA_STORE::YES) : t(t), d(d), s(s) {}
+    field() {}
 
-    field(FIELD_TYPE t, T d, bool s = true) : t(t), d(d), s(s ? DATA_STORE::YES : DATA_STORE::NO) {}
+    virtual ~field() {}
 
-    std::string to_str() {
-        std::string str(as_str<unsigned char>((unsigned char)t | (unsigned char)s));
-        str += as_str<T>(d);
-        return str;
+    virtual size_t size() {
+        size_t _size = 0;
+        for (std::map<std::string, std::vector<size_t>>::const_iterator it = _key_vpos.begin();
+             it != _key_vpos.end(); it++) {
+            _size += it->second.size();
+        }
+        return _size;
     }
 
-    bool orig() { return s == DATA_STORE::YES; }
-
-    static FIELD_TYPE type_test(const std::string& v) {
-        return (FIELD_TYPE)(v.length() > 0 ? v[0] & 0x07 : 0x00);
+    virtual std::vector<std::string> keys(const std::string& id) {
+        std::vector<std::string> _keys;
+        for (std::map<std::string, std::vector<size_t>>::const_iterator it = _key_vpos.begin();
+             it != _key_vpos.end(); it++) {
+            std::string _k = it->first;
+            _k += DB_SEPARATOR;
+            _k += as_str<size_t>(~(size_t)(it->second.size()));
+            _k += id;
+            _keys.push_back(_k);
+        }
+        return _keys;
     }
 
-    static DATA_STORE store_test(const std::string& v) {
-        return (DATA_STORE)(v.length() > 0 ? v[0] & 0x08 : 0x00);
+    // keys are parsed doc segs, values are position of all these terms
+    virtual std::map<std::string, std::vector<size_t>> key_vpos() { return _key_vpos; }
+
+    virtual std::vector<std::pair<std::string, std::string>> key_values(const std::string& id) {
+        std::vector<std::pair<std::string, std::string>> _key_values;
+        for (std::map<std::string, std::vector<size_t>>::const_iterator it = _key_vpos.begin();
+             it != _key_vpos.end(); it++) {
+            if (it->second.size() > 0) {
+                std::string _k = it->first;
+                _k += DB_SEPARATOR;
+                _k += as_str<size_t>(~(size_t)(it->second.size()));
+                _k += id;
+                _key_values.push_back(std::make_pair(_k, as_str<size_t>(it->second)));
+            }
+        }
+        return _key_values;
     }
 
 protected:
-    FIELD_TYPE t;
-    T d;
-    DATA_STORE s;
+    std::map<std::string, std::vector<size_t>> _key_vpos;
 };
 
-class long_field : public field<int64_t> {
+template <typename T>
+class number_field : public field<T> {
 public:
-    long_field(int64_t d, DATA_STORE s = DATA_STORE::YES) : field<int64_t>(FIELD_TYPE::LONG, d, s) {}
+    number_field(T d) : field<T>() {
+        std::string str;
+        str += as_str<T>(d);
+        std::vector<size_t> pos;
+        pos.push_back(0);
+        this->_key_vpos[str] = pos;
+    }
+
+protected:
+    number_field() : field<T>() {}
 };
 
-class double_field : public field<double> {
-public:
-    double_field(double d, DATA_STORE s = DATA_STORE::YES) : field<double>(FIELD_TYPE::DOUBLE, d, s) {}
-};
+typedef number_field<int64_t> long_field;
+typedef number_field<double> double_field;
 
 class string_field : public field<std::string> {
 public:
-    string_field(const std::string& d, DATA_STORE s = DATA_STORE::YES)
-        : field<std::string>(FIELD_TYPE::STRING, d, s) {}
-
-    std::string to_str() {
-        std::string str(as_str<unsigned char>((unsigned char)t | (unsigned char)s));
-        str += d;
-        return str;
+    string_field(const std::string& str) : field<std::string>() {
+        std::vector<size_t> pos;
+        pos.push_back(0);
+        _key_vpos[str] = pos;
     }
 
 protected:
-    string_field(FIELD_TYPE t, const std::string& d, DATA_STORE s = DATA_STORE::YES)
-        : field<std::string>(t, d, s) {}
+    string_field() : field<std::string>() {}  // do nothing, for extends
 };
 
 class text_field : public string_field {
 public:
-    text_field(const std::string& d, DATA_STORE s = DATA_STORE::YES) : string_field(FIELD_TYPE::TEXT, d, s) {}
+    text_field(analyzer::analyzer& anz) : string_field() {
+        anz.reset();
+        std::string token;
+        size_t pos = 0;
+        while (anz.next(token)) {
+            _key_vpos[token].push_back(pos);
+            pos++;
+        }
+    }
+};
+
+class vector_text_field : public field<std::string> {
+public:
+    vector_text_field(std::vector<analyzer::analyzer> vec, size_t dists) : field<std::string>() {
+        size_t pos = 0;
+        for (std::vector<analyzer::analyzer>::iterator it = vec.begin(); it != vec.end(); it++) {
+            it->reset();
+            std::string token;
+            while (it->next(token)) {
+                _key_vpos[token].push_back(pos);
+                pos++;
+            }
+            pos += dists - 1;
+        }
+    }
 };
 }
 }

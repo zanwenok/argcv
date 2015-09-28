@@ -79,24 +79,18 @@ bool ldb_wr::conn() {
 }
 
 bool ldb_wr::close() {
-    printf("close start ..\n");
-    fflush(NULL);
+    // printf("close start ..\n"); fflush(NULL);
     if (is_closed()) {
-        printf("also closed ..\n");
-        fflush(NULL);
+        // printf("also closed ..\n"); fflush(NULL);
         return false;
     } else {
-        printf("try do close start1 ..\n");
-        fflush(NULL);
+        // printf("try do close start1 ..\n"); fflush(NULL);
         ldb_close(_info->_db, &(_info->opt));
-        printf("try do close start2 ..\n");
-        fflush(NULL);
+        // printf("try do close start2 ..\n"); fflush(NULL);
         delete _info;
-        printf("try do close start3 ..\n");
-        fflush(NULL);
+        // printf("try do close start3 ..\n"); fflush(NULL);
         _info = nullptr;
-        printf("try do close finished..\n");
-        fflush(NULL);
+        // printf("try do close finished..\n"); fflush(NULL);
         return true;
     }
 }
@@ -132,7 +126,6 @@ bool ldb_wr::batch_rm(const std::set<std::string>& keys) { return ldb_batch_rm(_
     if (cache_size > 0) {
         _opt->block_cache = ::leveldb::NewLRUCache(cache_size);
     }
-
     ::leveldb::DB* db;
     return ::leveldb::DB::Open(*_opt, ddir, &db).ok() ? db : nullptr;
 }
