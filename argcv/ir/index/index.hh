@@ -178,30 +178,6 @@ public:
     }
 
     std::vector<std::pair<std::string, double>> search(const std::string& field_name,
-                                                       const std::string& term) {
-        std::vector<std::pair<std::string, double>> ids;
-        const std::string prefix(idx_key_prefix(field_name));
-        std::pair<std::vector<doc>, size_t> docs = std::make_pair(std::vector<doc>(), prefix.length());
-        _stg->start_with(prefix + term, _term_gather, &docs);
-
-        size_t ads = _sz_all_doc(field_name);  // ads : all document size
-        size_t dscct = docs.first.size();
-        for (size_t ix = 0; ix < dscct; ix++) {
-            doc d = docs.first[ix];
-            // printf("id : %s term: %s size: %zu\n", d.id_s().c_str(), d.term().c_str(), d.size());
-            // std::vector<size_t> vpos = d.vpos();
-            // for (size_t i = 0; i < vpos.size(); i++) {
-            //    printf("pos: %zu \n", vpos[i]);
-            //}
-            size_t stid = d.size();
-            size_t atsid = _sz_cur_doc(d.id(), field_name);
-            ids.push_back(std::make_pair(d.id(), tf_idf(stid, atsid, ads, dscct)));
-        }
-        std::sort(ids.begin(), ids.end(), tfidf_score_sort);
-        return ids;
-    }
-
-    std::vector<std::pair<std::string, double>> search(const std::string& field_name,
                                                        std::vector<std::string> terms, double delta = 0.01) {
         std::vector<std::pair<std::string, double>> ids;
         const std::string prefix(idx_key_prefix(field_name));
@@ -210,6 +186,9 @@ public:
         size_t ads = _sz_all_doc(field_name);  // ads : all document size
         for (size_t ix = 0; ix < terms.size(); ix++) {
             docs.first.clear();
+            std::string skey(prefix);
+            skey += terms[ix];
+            skey += DB_SEPARATOR;
             _stg->start_with(prefix + terms[ix], _term_gather, &docs);
             size_t dscct = docs.first.size();
             for (size_t ix = 0; ix < dscct; ix++) {
