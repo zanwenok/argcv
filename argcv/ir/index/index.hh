@@ -178,21 +178,25 @@ public:
     }
 
     std::vector<std::pair<std::string, double>> search(const std::string& field_name,
-                                                       std::vector<std::string> terms, double delta = 0.01) {
+                                                       std::vector<std::string> terms, size_t limit = 0,
+                                                       double delta = 0.01) {
         std::vector<std::pair<std::string, double>> ids;
         const std::string prefix(idx_key_prefix(field_name));
         std::map<std::string, std::pair<double, size_t>> sr_cnter;
-        std::pair<std::vector<doc>, size_t> docs = std::make_pair(std::vector<doc>(), prefix.length());
+        // std::pair<std::vector<doc>, size_t> docs = std::make_pair(std::vector<doc>(), prefix.length());
+        docs dc;
+        dc.sz_prefix = prefix.length();
+        dc.sz_limit = limit;
         size_t ads = _sz_all_doc(field_name);  // ads : all document size
         for (size_t ix = 0; ix < terms.size(); ix++) {
-            docs.first.clear();
+            dc.data.clear();
             std::string skey(prefix);
             skey += terms[ix];
             skey += DB_SEPARATOR;
-            _stg->start_with(prefix + terms[ix], _term_gather, &docs);
-            size_t dscct = docs.first.size();
+            _stg->start_with(prefix + terms[ix], _term_gather, &dc);
+            size_t dscct = dc.sz_data;
             for (size_t ix = 0; ix < dscct; ix++) {
-                doc d = docs.first[ix];
+                doc d = dc.data[ix];
                 size_t stid = d.size();
                 size_t atsid = _sz_cur_doc(d.id(), field_name);
                 double score = tf_idf(stid, atsid, ads, dscct);
@@ -280,15 +284,20 @@ private:
     }
 
     static bool _term_gather(const std::string& k, const std::string& v, void* data) {
-        std::pair<std::vector<doc>, size_t>* docs = (std::pair<std::vector<doc>, size_t>*)data;
-        doc d(k, v, docs->second);
-        /*
-        printf("id : %s term: %s size: %zu\n", d.id_s().c_str(), d.term().c_str(), d.size());
-        std::vector<size_t> vpos = d.vpos();
-        for (size_t i = 0; i < vpos.size(); i++) {
-            printf("pos: %zu \n", vpos[i]);
-        }*/
-        docs->first.push_back(d);
+        // std::pair<std::vector<doc>, size_t>* docs = (std::pair<std::vector<doc>, size_t>*)data;
+        docs* _dc = (docs*)data;
+
+        if (_dc->sz_limit == 0 || _dc->sz_limit <= _dc->data.size()) {
+            doc d(k, v, _dc->sz_prefix);
+            /*
+            printf("id : %s term: %s size: %zu\n", d.id_s().c_str(), d.term().c_str(), d.size());
+            std::vector<size_t> vpos = d.vpos();
+            for (size_t i = 0; i < vpos.size(); i++) {
+                printf("pos: %zu \n", vpos[i]);
+            }*/
+            _dc->data.push_back(d);
+        }
+        _dc->sz_data++;
         return true;  //(*_offset) < 2;
     }
 

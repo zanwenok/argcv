@@ -6,7 +6,7 @@
 // classification of an input into one of several possible non-binary outputs.
 
 // Progress:
-// TODO: load & save
+// NOT STARTED
 
 #include <cstdio>
 #include <cstdint>  // uint64_t

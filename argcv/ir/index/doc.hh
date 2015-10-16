@@ -53,6 +53,14 @@ protected:
     std::vector<size_t> _vpos;  // position
     double _score;
 };
+
+class docs {
+public:
+    std::vector<doc> data;
+    size_t sz_prefix;
+    size_t sz_limit;
+    size_t sz_data;
+};
 }
 }
 }  // namespace argcv::ir::index
