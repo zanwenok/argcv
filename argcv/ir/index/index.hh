@@ -195,7 +195,7 @@ public:
             skey += DB_SEPARATOR;
             _stg->start_with(prefix + terms[ix], _term_gather, &dc);
             size_t dscct = dc.sz_data;
-            for (size_t ix = 0; ix < dscct; ix++) {
+            for (size_t ix = 0; ix < dc.size(); ix++) {
                 doc d = dc.data[ix];
                 size_t stid = d.size();
                 size_t atsid = _sz_cur_doc(d.id(), field_name);
