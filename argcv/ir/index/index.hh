@@ -287,7 +287,7 @@ private:
         // std::pair<std::vector<doc>, size_t>* docs = (std::pair<std::vector<doc>, size_t>*)data;
         docs* _dc = (docs*)data;
 
-        if (_dc->sz_limit == 0 || _dc->sz_limit <= _dc->data.size()) {
+        if (_dc->sz_limit == 0 || _dc->sz_limit >= _dc->data.size()) {
             doc d(k, v, _dc->sz_prefix);
             /*
             printf("id : %s term: %s size: %zu\n", d.id_s().c_str(), d.term().c_str(), d.size());
