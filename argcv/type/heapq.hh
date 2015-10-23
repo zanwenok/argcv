@@ -4,7 +4,7 @@
 namespace argcv {
 namespace type {
 
-template <class T>
+template <typename T>
 class heapq {
 private:
     int size_limit;

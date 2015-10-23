@@ -29,7 +29,10 @@ namespace ml {
 
 class sgd : public ml<double, double> {
 public:
-    sgd() { printf("sgd() starting ..\n"); }
+    sgd(double delta = 0.001, double e = 0.00001, size_t loop_limit = 0, double theta_limit = 1000)
+        : data(dataset<double, double>()), delta(delta), e(e), loop_limit(loop_limit), theta_limit(theta_limit) {
+        printf("sgd() starting ..\n");
+    }
 
     sgd(dataset<double, double> data, double delta = 0.001, double e = 0.00001, size_t loop_limit = 0,
         double theta_limit = 1000)
@@ -112,7 +115,13 @@ public:
 
     bool load(const std::string &path) { return false; }
 
-    double predict(std::vector<double> x) { return 0; }
+    double predict(std::vector<double> x) {
+        double fx = 0;
+        for (size_t i = 0; i < wx.size(); i++) {
+            fx += x[i] * wx[i];
+        }
+        return fx + b;
+    }
 
 private:
     dataset<double, double> data;
