@@ -12,6 +12,7 @@
 #include "util.hh"
 #include "analyzer/analyzer.hh"
 #include "argcv/storage/storage.hh"
+#include "argcv/string/string.hh"
 #include "argcv/string/uuid.hh"
 //#include "argcv/wrapper/leveldb_wr.hh"
 
