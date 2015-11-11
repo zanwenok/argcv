@@ -50,7 +50,9 @@ std::vector<std::string> stemm_s(const std::string &str) {
         if (isupper(ch) || islower(ch)) {
             cm = 1;
             ch = tolower(ch);
-        } else {
+        } else if(ch >= '0' && ch <= '9') {
+            cm = 2;
+        }else {
             switch (ch) {
                 case '\r':
                 case '\n':
@@ -71,16 +73,18 @@ std::vector<std::string> stemm_s(const std::string &str) {
                 case ')':
                 case ',':
                 case ':':
-                    cm = 2;
+                    cm = 3;
                     break;
                 default:
-                    cm = 3;
+                    cm = 4;
             }
         }
 
         if (m != cm) {
-            Porter2Stemmer::stem(buff);
             if (buff.length() > 0) {
+                if(utf8_char_length(buff[0]) == 1) {
+                    Porter2Stemmer::stem(buff);
+                }
                 rt.push_back(buff);
                 buff.clear();
             }
@@ -90,10 +94,11 @@ std::vector<std::string> stemm_s(const std::string &str) {
             buff += ch;
         }
     }
-    Porter2Stemmer::stem(buff);
     if (buff.length() > 0) {
+        if(utf8_char_length(buff[0]) == 1) {
+            Porter2Stemmer::stem(buff);
+        }
         rt.push_back(buff);
-        buff.clear();
     }
     return rt;
 }
