@@ -88,7 +88,7 @@ public:
             } else {
                 // dump();
                 // no_change_continue_num = 0;
-                if (cc % 1000 == 0) {
+                if (cc % 100 == 0) {
                     printf("[perceptron] learn : %zu \n", cc);
                 }
             }
