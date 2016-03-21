@@ -43,7 +43,7 @@ typedef int (*file_handle)(const char* file_name, int is_dir, void* user);
 
 #ifndef WIN32  // for linux
 
-inline int is_dir_check(const char *path) {
+int is_dir_check(const char *path) {
     struct stat st;
     lstat(path, &st);
     return S_ISDIR(st.st_mode);
