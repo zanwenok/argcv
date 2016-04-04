@@ -10,8 +10,17 @@
 
 #include "argcv/ml/ml.hh"
 
+/* if svm-learn is used out of C++, define it as extern "C" */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "svm_common.h"
 #include "svm_learn.h"
+
+#ifdef __cplusplus
+}
+#endif
 
 namespace argcv {
 namespace wrapper {
@@ -26,16 +35,16 @@ public:
     size_t totdoc;
     size_t totwords;
     MODEL *_model;
-    DOC **__docs;
+    DOC **_docs;
     double *_target;
     double *_alpha_in;
 
     svm_light_wr_data()
-        : totdoc(0), totwords(0), _model(nullptr), __docs(nullptr), _target(nullptr), _alpha_in(nullptr) {
+        : totdoc(0), totwords(0), _model(nullptr), _docs(nullptr), _target(nullptr), _alpha_in(nullptr) {
         LEARN_PARM *_learn_parm = &learn_parm;
         KERNEL_PARM *_kernel_parm = &kernel_parm;
-        // strcpy(_learn_parm->predfile, "trans_predictions");
-        // strcpy(_learn_parm->alphafile, "");
+        strcpy(_learn_parm->predfile, "trans_predictions");
+        strcpy(_learn_parm->alphafile, "");
         _learn_parm->biased_hyperplane = 1;
         _learn_parm->sharedslack = 0;
         _learn_parm->remove_inconsistent = 0;
@@ -45,7 +54,7 @@ public:
         _learn_parm->svm_iter_to_shrink = -9999;
         _learn_parm->maxiter = 100000;
         _learn_parm->kernel_cache_size = 40;
-        _learn_parm->svm_c = 0.0;
+        _learn_parm->svm_c = 10000; //0.00
         _learn_parm->eps = 0.1;
         _learn_parm->transduction_posratio = -1.0;
         _learn_parm->svm_costratio = 1.0;
@@ -69,28 +78,24 @@ public:
     bool load_docs(dataset<double, double> data) {
         char comments[1] = "";
         free_docs();
-        __docs = (DOC **)my_malloc(sizeof(DOC *) * data.size());
+        _docs = (DOC **)my_malloc(sizeof(DOC *) * data.size());
         _target = (double *)my_malloc(sizeof(double) * data.size());
         totdoc = data.size();
         totwords = data.x_size();
-
-        size_t wsize = sizeof(WORD) * (data.x_size() + 10);
-        printf("wsize: %d\n", wsize);
+        printf("totdoc: %zu , totwords %zu \n", totdoc, totwords);
+        size_t sz_word = sizeof(WORD) * (data.x_size() + 10);
+        printf("wsize: %lu\n", sz_word);
         fflush(nullptr);
-        WORD *_words = (WORD *)my_malloc(wsize);
-        if (_words == nullptr) printf("error: allocate failed!\n");
-        fflush(nullptr);
+        WORD *_words = (WORD *) malloc(sz_word);
         for (int i = 0; i < data.size(); i++) {
             for (int j = 0; j < data.x_size(); j++) {
-                (_words[i]).wnum = j + 1;
-                (_words[i]).weight = (FVAL)data.x_at(i, j);
+                _words[j].wnum = j + 1;
+                _words[j].weight = (FVAL)data.x_at((uint64_t) i, (uint64_t) j);
             }
             _words[data.x_size()].wnum = 0;
-            __docs[i] = create_example(i, 0, 0, 1.0, create_svector(_words, comments, 1.0));
+            _docs[i] = create_example(i, 0, 0, 1.0, create_svector(_words, comments, 1.0));
+            _target[i] = data.y_at(i);
         }
-        printf("wsize: %d\n", wsize);
-        fflush(nullptr);
-        // TODO what's wrong here?
         free(_words);
         return true;
     }
@@ -114,12 +119,12 @@ public:
     }
 
     void free_docs() {
-        totdoc = 0;
-        totwords = 0;
-        if (__docs != nullptr) {
-            for (int i = 0; i < totdoc; i++) free_example(__docs[i], 1);
-            free(__docs);
-            __docs = nullptr;
+        //totdoc = 0;
+        //totwords = 0;
+        if (_docs != nullptr) {
+            for (int i = 0; i < totdoc; i++) free_example(_docs[i], 1);
+            free(_docs);
+            _docs = nullptr;
         }
         if (_target != nullptr) {
             free(_target);
@@ -150,40 +155,49 @@ bool svm_light_wr::learn() {
 
     _sl_info->free_model();
 
-    printf("size of model: %zu", sizeof(MODEL));
-    fflush(nullptr);
+    //printf("size of model: %zu\n", sizeof(MODEL));
+    //fflush(nullptr);
     _sl_info->_model = (MODEL *)my_malloc(sizeof(MODEL));
 
-    printf("allocated ..\n");
-    fflush(nullptr);
+    //printf("allocated ..\n");
+    //fflush(nullptr);
 
     KERNEL_CACHE **__kernel_cache = _kernel_cache == nullptr ? nullptr : &_kernel_cache;
 
-    printf("%s:%d..\n", __FILE__, __LINE__);
-    fflush(nullptr);
+    //printf("[check point] %s:%d..\n", __FILE__, __LINE__);
+    //fflush(nullptr);
 
     if (_sl_info->learn_parm.type == CLASSIFICATION) {
-        svm_learn_classification(_sl_info->__docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
+        svm_learn_classification(_sl_info->_docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
                                  &(_sl_info->learn_parm), &(_sl_info->kernel_parm), _kernel_cache,
                                  _sl_info->_model, _sl_info->_alpha_in);
     } else if (_sl_info->learn_parm.type == REGRESSION) {
-        svm_learn_regression(_sl_info->__docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
+        svm_learn_regression(_sl_info->_docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
                              &(_sl_info->learn_parm), &(_sl_info->kernel_parm), __kernel_cache,
                              _sl_info->_model);
     } else if (_sl_info->learn_parm.type == RANKING) {
-        svm_learn_ranking(_sl_info->__docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
+        svm_learn_ranking(_sl_info->_docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
                           &(_sl_info->learn_parm), &(_sl_info->kernel_parm), __kernel_cache,
                           _sl_info->_model);
     } else if (_sl_info->learn_parm.type == OPTIMIZATION) {
-        svm_learn_optimization(_sl_info->__docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
+        svm_learn_optimization(_sl_info->_docs, _sl_info->_target, _sl_info->totdoc, _sl_info->totwords,
                                &(_sl_info->learn_parm), &(_sl_info->kernel_parm), _kernel_cache,
                                _sl_info->_model, _sl_info->_alpha_in);
     }
-    if (_kernel_cache) {
+    
+    //printf("[check point] %s:%d..\n", __FILE__, __LINE__);
+    
+    if (_kernel_cache != nullptr) {
         /* Free the memory used for the cache. */
         kernel_cache_cleanup(_kernel_cache);
     }
-    _sl_info->free_docs();
+    //printf("[check point] %s:%d..\n", __FILE__, __LINE__);
+    //_sl_info->free_docs();
+    
+    if (_sl_info->_model->kernel_parm.kernel_type == LINEAR) { /* linear kernel */
+        /* compute weight vector */
+        add_weight_vector_to_linear_model(_sl_info->_model);
+    }
     return true;
 }
 
@@ -236,6 +250,7 @@ bool svm_light_wr::opt(const std::string &key, bool value) { return _sl_info->op
 
 void svm_light_wr::init(dataset<double, double> d) {
     free_all();
+    verbosity = 1;
     _sl_info = new svm_light_wr_data;
     data = d;
 }

@@ -22,29 +22,44 @@
  * SOFTWARE.
  *
  **/
-#ifndef ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
-#define ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
-#include "test/argcv_test.h"
+#ifndef ARGCV_CONCURRENT_THREADS_HH
+#define ARGCV_CONCURRENT_THREADS_HH
 
-#include "argcv/thread/threads.hh"
+#include <atomic>
 
-using namespace argcv::thread;
+namespace argcv {
+namespace concurrent {
 
-void test_case_th_lacus_data_printer(int* v) {
-    printf("[start] : %d \n", *v);
-    // usleep(1000000);
-    printf("[ end ] : %d \n", *v);
+// http://en.cppreference.com/w/cpp/language/type_alias
+template <typename T>
+using atomic = std::atomic<T>;  // typedef std::atomic<T> as atomic<T>
+
+template <typename T>
+T* atomic_fetch_add(atomic<T*>* obj, std::ptrdiff_t arg) {
+    return obj->fetch_add(arg);
 }
 
-static int test_case_threads(int argc, char* argv[]) {
-    threads<int> thlacus(test_case_th_lacus_data_printer, 3, 100, 300000);
-    int vals[10];
-    for (int v = 0; v < 10; v++) {
-        vals[v] = v;
-        thlacus.enqueue(&vals[v]);
-    }
-    thlacus.join();
-    return 0;
+template <typename T>
+T* atomic_fetch_sub(atomic<T*>* obj, std::ptrdiff_t arg) {
+    return obj->fetch_sub(arg);
 }
 
-#endif  // ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
+template <typename T>
+T* atomic_fetch_or(atomic<T*>* obj, std::ptrdiff_t arg) {
+    return obj->fetch_or(arg);
+}
+
+
+template <typename T>
+T* atomic_fetch_xor(atomic<T*>* obj, std::ptrdiff_t arg) {
+    return obj->fetch_xor(arg);
+}
+
+
+
+    
+    
+}
+}  // argcv::concurrent
+
+#endif  //  ARGCV_CONCURRENT_THREADS_HH

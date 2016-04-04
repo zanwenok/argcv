@@ -22,42 +22,38 @@
  * SOFTWARE.
  *
  **/
-#include "argcv_test.h"
+#ifndef ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
+#define ARGCV_TEST_THREAD_TH_LACUS_TEST_HH
 
-#include <cstdio>
-#include <cstring>
+#include <unistd.h>
+#include "test/argcv_test.h"
 
-#include "string/string_test.hh"
-#include "sys/sys_test.hh"
-#include "wrapper/leveldb_wr_test.hh"
-#include "wrapper/ini_wr_test.hh"
-#include "ir/index/analyzer/analyzer_test.hh"
-#include "concurrent/threads_test.hh"
-#include "argcv/argcv.hh"
+#include "argcv/concurrent/threads.hh"
 
-static int test_case_info(int argc,char * argv[]) {
-    argcv::argcv_info info;
-    return 0;
+using namespace argcv::concurrent;
+
+static int test_case_threads(int argc, char* argv[]) {
+    size_t thread_size = 3;
+    size_t task_size = 100;
+    threads pool(thread_size);
+    bool all_done = true;
+    std::vector<std::future<bool> > results;
+    for (size_t i = 0; i < task_size; i++) {
+        results.emplace_back(pool.enqueue([i, thread_size, task_size] {
+            printf("[test_case_threads] start: %zu of %zu\n", i, task_size);
+            // usleep(i);
+            printf("[test_case_threads] end: %zu of %zu\n", i, task_size);
+            return true;
+        }));
+    }
+
+    for (auto&& result : results) {
+        bool c_status = static_cast<bool>(result.get());
+        if (!c_status) {
+            all_done = false;
+        }
+    }
+    return all_done ? 0 : -1;
 }
 
-
-const testcase_t test_list[] = {
-    test_case_info,
-    test_case_string_split,
-    test_case_string_replace,
-    test_case_uuid,
-    test_case_stemmer,
-    test_case_analyzer_basic,
-    test_case_leveldb_wr,
-    test_case_ini_wr,
-    test_case_threads,
-    test_case_dir_trav
-};
-
-int main(int argc, char * argv[]) {
-    TEST_CASE_EXPECT_GT(argc,1);
-    int testmax = sizeof(test_list) / sizeof(test_list[0]);
-    int offset = atoi(argv[1]);
-    TEST_CASE_EXPECT_LT(offset,testmax);
-    return test_list[offset](argc, argv);
-}
+#endif  // ARGCV_TEST_THREAD_TH_LACUS_TEST_HH

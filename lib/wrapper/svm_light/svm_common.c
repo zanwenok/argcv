@@ -20,7 +20,8 @@
 #include "ctype.h"
 #include "kernel.h" /* this contains a user supplied kernel */
 
-long verbosity; /* verbosity level (0-4) */
+long verbosity;
+/* verbosity level (0-4) */
 long kernel_cache_statistic;
 
 double classify_example(MODEL *model, DOC *ex)
@@ -66,7 +67,8 @@ double kernel(KERNEL_PARM *kernel_parm, DOC *a, DOC *b)
        take the kernel between all pairs */
     for (fa = a->fvec; fa; fa = fa->next) {
         for (fb = b->fvec; fb; fb = fb->next) {
-            printf("kernel id : %d -- %d \n",fa->kernel_id,fb->kernel_id); fflush(NULL);
+            // printf("kernel id : %li -- %li \n", fa->kernel_id, fb->kernel_id);
+            // fflush(NULL);
             if (fa->kernel_id == fb->kernel_id)
                 sum += fa->factor * fb->factor * single_kernel(kernel_parm, fa, fb);
         }

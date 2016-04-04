@@ -22,12 +22,6 @@
 #include "svm_common.h"
 
 
-/* if svm-learn is used out of C++, define it as extern "C" */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
 void svm_learn_classification(DOC **, double *, long, long, LEARN_PARM *, KERNEL_PARM *, KERNEL_CACHE *,
                               MODEL *, double *);
 void svm_learn_regression(DOC **, double *, long, long, LEARN_PARM *, KERNEL_PARM *, KERNEL_CACHE **,
@@ -136,8 +130,6 @@ typedef struct cache_parm_s {
     long offset, stepsize;
 } cache_parm_t;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif
+
