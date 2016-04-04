@@ -30,8 +30,8 @@
 #include <cstdint>  // uint64_t
 
 #include <string>
-#include <vector>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 #include "ml.hh"
 

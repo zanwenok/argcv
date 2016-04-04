@@ -31,13 +31,13 @@
 // NOT STARTED
 // ref: http://blog.pluskid.org/?p=632
 
-#include <cstdio>
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 #include "ml.hh"
 

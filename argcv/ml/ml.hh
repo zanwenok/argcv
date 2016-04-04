@@ -31,12 +31,12 @@
 // study of algorithms that can learn from and make predictions on data.
 // ref: http://en.wikipedia.org/wiki/Machine_learning
 
-#include <cstdio>
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
 #include <string>
-#include <vector>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 namespace argcv {
 namespace ml {
