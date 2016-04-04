@@ -32,14 +32,14 @@
 //
 // Progress:
 // NOT STARTED
-#include <cmath>  // pow
-#include <cstdio>
+#include <cmath>    // pow
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 #include "ml.hh"
 

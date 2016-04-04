@@ -29,12 +29,12 @@
 // In machine learning, the perceptron is an algorithm for supervised
 // classification of an input into one of several possible non-binary outputs.
 
-#include <cstdio>
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
 #include <string>
-#include <vector>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 #include "ml.hh"
 

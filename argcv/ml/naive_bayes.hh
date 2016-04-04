@@ -32,16 +32,16 @@
 // Progress:
 // TODO: load & save
 
-#include <cstdio>
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
-#include "ml.hh"
 #include "argcv/wrapper/leveldb_wr.hh"
+#include "ml.hh"
 
 namespace argcv {
 namespace ml {

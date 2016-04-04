@@ -38,13 +38,13 @@
 // a sum of differentiable functions.
 
 #include <cmath>
-#include <cstdio>
 #include <cstdint>  // uint64_t
+#include <cstdio>
 
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
 #include <utility>  // std::pair, std::make_pair
+#include <vector>
 
 #include "ml.hh"
 
@@ -54,7 +54,11 @@ namespace ml {
 class sgd : public ml<double, double> {
 public:
     sgd(double delta = 0.001, double e = 0.00001, size_t loop_limit = 0, double theta_limit = 1000)
-        : data(dataset<double, double>()), delta(delta), e(e), loop_limit(loop_limit), theta_limit(theta_limit) {
+        : data(dataset<double, double>()),
+          delta(delta),
+          e(e),
+          loop_limit(loop_limit),
+          theta_limit(theta_limit) {
         printf("sgd() starting ..\n");
     }
 

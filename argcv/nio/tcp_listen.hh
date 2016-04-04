@@ -41,16 +41,16 @@
 #include <sys/event.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <unistd.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 #include <assert.h>
+#include <errno.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <fcntl.h>  //fctl open
 

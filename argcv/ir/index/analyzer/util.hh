@@ -37,7 +37,7 @@ namespace ir {
 namespace index {
 namespace analyzer {
 /**
- * deprecated... 
+ * deprecated...
  */
 
 inline std::map<std::string, std::pair<uint64_t, std::vector<uint32_t>>> token_stat(analyzer* _t) {
@@ -49,9 +49,9 @@ inline std::map<std::string, std::pair<uint64_t, std::vector<uint32_t>>> token_s
         if (s.find(v) == s.end()) {
             std::vector<uint32_t> pl;
             pl.push_back(pos);
-            s[v] = std::make_pair(1,pl);
+            s[v] = std::make_pair(1, pl);
         } else {
-            s[v].first ++;
+            s[v].first++;
             s[v].second.push_back(pos);
         }
         pos++;
