@@ -73,9 +73,11 @@ public:
     void add(std::vector<double> x, double y) { data.add(x, y); }
 
     bool learn() {
-        printf("size : %llu \n", data.size());
-        if (data.size() < 1) return false;  // dataset not found.
-
+        printf("size of dataset: %llu \n", data.size());
+        if (data.size() < 1) {
+            fprintf(stderr, "size of dataset is ZERO, return failed\n");
+            return false;  // dataset not found.
+        }
         sz_w = data.x_at(0).size();
         for (size_t ix = 0; ix < sz_w; ix++) wx.push_back(0.0);
         b = 0.0;

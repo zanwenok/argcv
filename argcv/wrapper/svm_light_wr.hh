@@ -22,8 +22,8 @@
  * SOFTWARE.
  *
  **/
-#ifndef ARGCV_ML_SVM_HH
-#define ARGCV_ML_SVM_HH
+#ifndef ARGCV_WRAPPER_SVM_LIGHT_WR_HH
+#define ARGCV_WRAPPER_SVM_LIGHT_WR_HH
 
 // Support Vector Machine
 //
@@ -39,13 +39,46 @@
 #include <utility>  // std::pair, std::make_pair
 #include <vector>
 
-#include "argcv/wrapper/svm_light_wr.hh"
-#include "ml.hh"
+#include "argcv/ml/ml.hh"
 
 namespace argcv {
-namespace ml {
-typedef ::argcv::wrapper::svm_light_wr::svm_light_wr svm;
-}
-}  // namespace argcv::ml
+namespace wrapper {
+namespace svm_light_wr {
 
-#endif  //  ARGCV_ML_SVM_HH
+using namespace ::argcv::ml;
+
+class svm_light_wr_data;
+
+class svm_light_wr : public ::argcv::ml::ml<double, double> {
+public:
+    svm_light_wr();
+    svm_light_wr(dataset<double, double> data);
+    virtual ~svm_light_wr();
+    
+    void add(std::vector<double> x, double y) { data.add(x, y); }
+
+    bool learn();
+
+    bool save(const std::string &path);
+
+    bool load(const std::string &path);
+
+    double predict(std::vector<double> x);
+
+    bool opt(const std::string &key, const std::string &value);
+    bool opt(const std::string &key, uint64_t value);
+    bool opt(const std::string &key, double value);
+    bool opt(const std::string &key, bool value);
+
+    virtual void init(dataset<double, double> d);
+
+private:
+    dataset<double, double> data;
+    void free_all();
+    svm_light_wr_data * _sl_info;
+};
+}
+}
+}  // namespace argcv::wrapper::svm_light_wr
+
+#endif  //  ARGCV_WRAPPER_SVM_LIGHT_WR_HH
