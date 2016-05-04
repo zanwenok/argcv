@@ -19,7 +19,6 @@ env: COMPILER=g++-4.9
 
 os:
     - linux
-    - osx
 
 before_install:
     - echo $LANG
