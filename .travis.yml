@@ -1,8 +1,7 @@
 language: cpp
 
 # Ubuntu 14.04 Trusty support
-sudo: required
-dist: trusty
+sudo: false
 
 addons:
     apt:
@@ -17,6 +16,14 @@ addons:
 compiler: g++-4.9
 
 env: COMPILER=g++-4.9
+
+os:
+    - linux
+    - osx
+
+before_install:
+    - echo $LANG
+    - echo $LC_ALL
 
 script: 
     - mkdir build
