@@ -6,7 +6,7 @@ This is a lightweight utility library written in C++ and managed by CMake.
 
 As a coder in the field of Data Mining, Social Network Analysis and Information Retrieval, plenty of code can be reused. Looking for a place and store the frequent reuesd code may be a good idea.
 
-This project desired to be used as a submodule like [this project](https://github.com/argcv/argcv-seed ).
+This project desired to be used as a submodule like [this project](https://github.com/yuikns/argcv-seed ).
 
 As a reader, YOU, I do wish there are some code may giving you some help. Any bug report and feature requestion are appreciated.
 
