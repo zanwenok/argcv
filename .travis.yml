@@ -9,16 +9,14 @@ addons:
         sources:
         # add PPAs with more up-to-date toolchains
         - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-3.6
         packages:
         # install toolchains
-        - gcc-5
-        - g++-5
-        - clang-3.6
+        - gcc-4.9
+        - g++-4.9
 
-compiler: gcc
+compiler: g++-4.9
 
-env: COMPILER=g++-5
+env: COMPILER=g++-4.9
 
 script: 
     - mkdir build
@@ -26,5 +24,4 @@ script:
     - cmake .. && make -j8
 
 after_script:
-    - cd build
     - ctest
