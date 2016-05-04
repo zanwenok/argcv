@@ -20,8 +20,8 @@
  * 3. This notice may not be removed or altered from any source
  * distribution.
  **/
-#ifndef ARGCV_CONCURRENT_THREADS_HH
-#define ARGCV_CONCURRENT_THREADS_HH
+#ifndef ARGCV_CONCURRENT_THREAD_POOL_HH
+#define ARGCV_CONCURRENT_THREAD_POOL_HH
 
 #include <condition_variable>
 #include <functional>
@@ -36,13 +36,13 @@
 namespace argcv {
 namespace concurrent {
 
-class threads {
+class thread_pool {
 public:
     //  the constructor just launches some amount of workers
-    threads(size_t threads) : stop(false) {
+    thread_pool(size_t threads) : stop(false) {
         for (size_t i = 0; i < threads; ++i)
             workers.emplace_back([this] {
-                for (;;) {
+                while (true) {
                     std::function<void()> task;
                     {
                         std::unique_lock<std::mutex> lock(this->queue_mutex);
@@ -56,12 +56,22 @@ public:
             });
     }
 
+    // the destructor joins all threads
+    virtual ~thread_pool() {
+        {
+            std::unique_lock<std::mutex> lock(queue_mutex);
+            stop = true;
+        }
+        condition.notify_all();
+        for (std::thread& worker : workers) worker.join();
+    }
+
     // add new work item to the pool
     template <class F, class... Args>
     auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
         using return_type = typename std::result_of<F(Args...)>::type;
 
-        auto task = std::make_shared<std::packaged_task<return_type()> >(
+        auto task = std::make_shared<std::packaged_task<return_type()>>(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
         std::future<return_type> res = task->get_future();
@@ -77,21 +87,11 @@ public:
         return res;
     }
 
-    // the destructor joins all threads
-    ~threads() {
-        {
-            std::unique_lock<std::mutex> lock(queue_mutex);
-            stop = true;
-        }
-        condition.notify_all();
-        for (std::thread& worker : workers) worker.join();
-    }
-
 private:
     // need to keep track of threads so we can join them
     std::vector<std::thread> workers;
     // the task queue
-    std::queue<std::function<void()> > tasks;
+    std::queue<std::function<void()>> tasks;
 
     // synchronization
     std::mutex queue_mutex;
@@ -101,4 +101,4 @@ private:
 }
 }  // argcv::concurrent
 
-#endif  //  ARGCV_CONCURRENT_THREADS_HH
+#endif  //  ARGCV_CONCURRENT_THREAD_POOL_HH

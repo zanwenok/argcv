@@ -27,15 +27,15 @@
 
 #include <cstring>
 
-#include <vector>
-#include <string>
 #include <algorithm>
+#include <string>
+#include <vector>
 
 namespace argcv {
 namespace string {
 
 inline std::vector<std::string> &split(const std::string &s, const std::string &delim,
-                                       std::vector<std::string> *_elems) {
+                                       std::vector<std::string> *_elems, bool skip_blank_elem = true) {
     std::string item;
     if (delim.empty()) {
         _elems->push_back(s);
@@ -45,8 +45,7 @@ inline std::vector<std::string> &split(const std::string &s, const std::string &
     while (true) {
         subend = search(substart, s.end(), delim.begin(), delim.end());
         std::string temp(substart, subend);
-        // if (keep_empty || !temp.empty()) {
-        if (!temp.empty()) {
+        if (!skip_blank_elem || !temp.empty()) {
             _elems->push_back(temp);
         }
         if (subend == s.end()) {
@@ -57,9 +56,10 @@ inline std::vector<std::string> &split(const std::string &s, const std::string &
     return *_elems;
 }
 
-inline std::vector<std::string> split(const std::string &s, const std::string &delim) {
+inline std::vector<std::string> split(const std::string &s, const std::string &delim,
+                                      bool skip_blank_elem = true) {
     std::vector<std::string> elems;
-    split(s, delim, &elems);
+    split(s, delim, &elems, skip_blank_elem);
     return elems;
 }
 

@@ -28,14 +28,14 @@
 #include <unistd.h>
 #include "test/argcv_test.h"
 
-#include "argcv/concurrent/threads.hh"
+#include "argcv/concurrent/thread_pool.hh"
 
 using namespace argcv::concurrent;
 
 static int test_case_threads(int argc, char* argv[]) {
     size_t thread_size = 3;
     size_t task_size = 100;
-    threads pool(thread_size);
+    thread_pool pool(thread_size);
     bool all_done = true;
     std::vector<std::future<bool> > results;
     for (size_t i = 0; i < task_size; i++) {

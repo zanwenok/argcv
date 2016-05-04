@@ -28,19 +28,26 @@
 
 #include <string>
 
-#include "argcv/string/string.hh"
 #include "argcv/string/hash.hh"
+#include "argcv/string/string.hh"
 #include "argcv/string/uuid.hh"
 
 using namespace argcv::string;
 
 static int test_case_string_split(int argc, char* argv[]) {
-    std::string s("abc def ghi");
-    auto v = split(s, " ");
+    std::string s("abc def  ghi ");
+    auto v = split(s, " ", true);
     TEST_CASE_EXPECT_EQ(v.size(), 3);
     TEST_CASE_EXPECT_EQ(v[0], std::string("abc"));
     TEST_CASE_EXPECT_EQ(v[1], std::string("def"));
     TEST_CASE_EXPECT_EQ(v[2], std::string("ghi"));
+    v = split(s, " ", false);
+    TEST_CASE_EXPECT_EQ(v.size(), 5);
+    TEST_CASE_EXPECT_EQ(v[0], std::string("abc"));
+    TEST_CASE_EXPECT_EQ(v[1], std::string("def"));
+    TEST_CASE_EXPECT_EQ(v[2], std::string(""));
+    TEST_CASE_EXPECT_EQ(v[3], std::string("ghi"));
+    TEST_CASE_EXPECT_EQ(v[4], std::string(""));
     return 0;
 }
 
@@ -68,14 +75,17 @@ static int test_case_uuid(int argc, char* argv[]) {
 }
 
 static int test_case_stemmer(int argc, char* argv[]) {
-    std::vector<std::string> elems = stemm_s("Data Mining一些 中\u00A0文的 控,制 is an analytic process designed to explore data (usually large amounts of data - typically business or market related - also known as big data) in search of consistent patterns and/or systematic relationships between variables, and then to validate the findings by applying the detected patterns to new");
-    for(size_t i =  0 ; i < elems.size(); i ++ ) {
-        //printf("%zu (%s):%lu\n",i,elems[i].c_str(),elems[i].length());
-        printf("[%s] ",elems[i].c_str());
+    std::vector<std::string> elems = stemm_s(
+        "Data Mining一些 中\u00A0文的 控,制 is an analytic process designed to explore data (usually large "
+        "amounts of data - typically business or market related - also known as big data) in search of "
+        "consistent patterns and/or systematic relationships between variables, and then to validate the "
+        "findings by applying the detected patterns to new");
+    for (size_t i = 0; i < elems.size(); i++) {
+        // printf("%zu (%s):%lu\n",i,elems[i].c_str(),elems[i].length());
+        printf("[%s] ", elems[i].c_str());
     }
     printf("\n");
     return 0;
 }
-
 
 #endif  // ARGCV_TEST_ARGCV_STRING_STRING_TEST_HH
